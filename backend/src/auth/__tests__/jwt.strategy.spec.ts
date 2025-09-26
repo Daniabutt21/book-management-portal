@@ -83,8 +83,12 @@ describe('JwtStrategy', () => {
     it('should throw UnauthorizedException when user not found', async () => {
       mockPrismaService.user.findUnique.mockResolvedValue(null);
 
-      await expect(strategy.validate(mockPayload)).rejects.toThrow(UnauthorizedException);
-      await expect(strategy.validate(mockPayload)).rejects.toThrow('User not found');
+      await expect(strategy.validate(mockPayload)).rejects.toThrow(
+        UnauthorizedException
+      );
+      await expect(strategy.validate(mockPayload)).rejects.toThrow(
+        'User not found'
+      );
 
       expect(mockPrismaService.user.findUnique).toHaveBeenCalledWith({
         where: { id: mockPayload.sub },

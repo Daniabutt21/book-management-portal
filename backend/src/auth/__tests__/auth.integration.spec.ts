@@ -156,11 +156,7 @@ describe('AuthService Integration', () => {
 
     beforeEach(async () => {
       // Create a test user for login tests
-      await service.signup(
-        loginData.email,
-        loginData.password,
-        'Test User'
-      );
+      await service.signup(loginData.email, loginData.password, 'Test User');
     });
 
     it('should login successfully with valid credentials and return JWT token', async () => {

@@ -185,7 +185,7 @@ describe('AuthService', () => {
 
     it('should login successfully and return user with JWT token', async () => {
       const mockToken = 'mock-jwt-token';
-      
+
       mockPrismaService.user.findUnique.mockResolvedValue(mockUser);
       mockedBcrypt.compare.mockResolvedValue(true as never);
       mockJwtService.sign.mockReturnValue(mockToken);
@@ -196,7 +196,10 @@ describe('AuthService', () => {
         where: { email: loginData.email },
         include: { role: true },
       });
-      expect(mockedBcrypt.compare).toHaveBeenCalledWith(loginData.password, mockUser.password);
+      expect(mockedBcrypt.compare).toHaveBeenCalledWith(
+        loginData.password,
+        mockUser.password
+      );
       expect(mockJwtService.sign).toHaveBeenCalledWith({
         sub: mockUser.id,
         email: mockUser.email,
@@ -246,13 +249,16 @@ describe('AuthService', () => {
         service.login(loginData.email, loginData.password)
       ).rejects.toThrow('Invalid email or password');
 
-      expect(mockedBcrypt.compare).toHaveBeenCalledWith(loginData.password, mockUser.password);
+      expect(mockedBcrypt.compare).toHaveBeenCalledWith(
+        loginData.password,
+        mockUser.password
+      );
       expect(mockJwtService.sign).not.toHaveBeenCalled();
     });
 
     it('should generate JWT token with correct payload', async () => {
       const mockToken = 'mock-jwt-token';
-      
+
       mockPrismaService.user.findUnique.mockResolvedValue(mockUser);
       mockedBcrypt.compare.mockResolvedValue(true as never);
       mockJwtService.sign.mockReturnValue(mockToken);

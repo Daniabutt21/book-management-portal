@@ -79,12 +79,11 @@ describe('RolesGuard', () => {
 
     it('should deny access when user is not present in request', () => {
       mockReflector.getAllAndOverride.mockReturnValue(['USER']);
-      
+
       const mockContextWithoutUser = {
         ...mockExecutionContext,
         switchToHttp: jest.fn().mockReturnValue({
-          getRequest: jest.fn().mockReturnValue({
-          }),
+          getRequest: jest.fn().mockReturnValue({}),
         }),
       } as unknown as ExecutionContext;
 
@@ -95,7 +94,7 @@ describe('RolesGuard', () => {
 
     it('should deny access when user has no role', () => {
       mockReflector.getAllAndOverride.mockReturnValue(['USER']);
-      
+
       const mockContextWithoutRole = {
         ...mockExecutionContext,
         switchToHttp: jest.fn().mockReturnValue({
@@ -123,7 +122,7 @@ describe('RolesGuard', () => {
 
     it('should handle admin role correctly', () => {
       mockReflector.getAllAndOverride.mockReturnValue(['ADMIN']);
-      
+
       const mockContextWithAdmin = {
         ...mockExecutionContext,
         switchToHttp: jest.fn().mockReturnValue({
