@@ -1,10 +1,14 @@
-import { Injectable, ConflictException } from '@nestjs/common';
+import { Injectable, ConflictException, UnauthorizedException } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from '../common/prisma/prisma.service';
 import * as bcrypt from 'bcryptjs';
 
 @Injectable()
 export class AuthService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private jwtService: JwtService,
+  ) {}
 
   async signup(email: string, password: string, name: string) {
     // Check if user already exists
@@ -30,8 +34,42 @@ export class AuthService {
       },
     });
 
-    // Remove password from response
-    const { password: _, ...userWithoutPassword } = user;
-    return userWithoutPassword;
+  // Remove password from response
+  const { password: _, ...userWithoutPassword } = user;
+  return userWithoutPassword;
+}
+
+async login(email: string, password: string) {
+  // Find user by email
+  const user = await this.prisma.user.findUnique({
+    where: { email },
+    include: { role: true },
+  });
+
+  if (!user) {
+    throw new UnauthorizedException('Invalid email or password');
   }
+
+  // Compare password
+  const isPasswordValid = await bcrypt.compare(password, user.password);
+  if (!isPasswordValid) {
+    throw new UnauthorizedException('Invalid email or password');
+  }
+
+  // Remove password from response
+  const { password: _, ...userWithoutPassword } = user;
+  
+  // Generate JWT token
+  const payload = { 
+    sub: user.id, 
+    email: user.email, 
+    role: user.role.name 
+  };
+  const token = this.jwtService.sign(payload);
+
+  return {
+    user: userWithoutPassword,
+    access_token: token,
+  };
+}
 }
