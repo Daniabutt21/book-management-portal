@@ -118,6 +118,7 @@ The backend will be available at `http://localhost:3001`
 - `npm run prisma:migrate` - Run database migrations
 - `npm run prisma:seed` - Seed database with initial data
 - `npm run prisma:studio` - Open Prisma Studio
+- `npm run test` - Run all tests (unit + integration)
 
 **Database:**
 
@@ -133,6 +134,40 @@ The backend will be available at `http://localhost:3001`
 
 - Copy `env.example` to `.env`
 - Update values as needed
+
+## Testing
+
+### Test Structure
+
+The project follows NestJS testing best practices with co-located tests:
+
+```
+backend/src/
+├── auth/
+│   ├── auth.service.ts
+│   ├── auth.controller.ts
+│   └── __tests__/
+│       ├── auth.service.spec.ts        # Unit tests
+│       └── auth.integration.spec.ts    # Integration tests
+```
+
+### Test Types
+
+- **Unit Tests** (`.spec.ts`) - Test services/controllers in isolation with mocked dependencies
+- **Integration Tests** (`.integration.spec.ts`) - Test component interactions with real database
+
+### Running Tests
+
+```bash
+# Run all tests (unit + integration)
+npm run test
+
+# Run unit tests only
+npm run test:unit
+
+# Run integration tests only
+npm run test:integration
+```
 
 ## License
 
