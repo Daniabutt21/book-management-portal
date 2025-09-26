@@ -1,5 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { ConflictException } from '@nestjs/common';
+import { ConflictException, UnauthorizedException } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
 import { AuthService } from '../auth.service';
 import { PrismaService } from '../../common/prisma/prisma.service';
 import * as bcrypt from 'bcryptjs';
@@ -7,15 +8,26 @@ import * as bcrypt from 'bcryptjs';
 describe('AuthService Integration', () => {
   let service: AuthService;
   let prismaService: PrismaService;
+  let jwtService: JwtService;
   let module: TestingModule;
 
   beforeAll(async () => {
     module = await Test.createTestingModule({
-      providers: [AuthService, PrismaService],
+      providers: [
+        AuthService,
+        PrismaService,
+        {
+          provide: JwtService,
+          useValue: {
+            sign: jest.fn().mockReturnValue('mock-jwt-token'),
+          },
+        },
+      ],
     }).compile();
 
     service = module.get<AuthService>(AuthService);
     prismaService = module.get<PrismaService>(PrismaService);
+    jwtService = module.get<JwtService>(JwtService);
   });
 
   afterAll(async () => {
@@ -133,6 +145,82 @@ describe('AuthService Integration', () => {
 
       expect(dbUser?.roleId).toBe('user');
       expect(dbUser?.role?.name).toBe('USER');
+    });
+  });
+
+  describe('login integration', () => {
+    const loginData = {
+      email: 'test@example.com',
+      password: 'password123',
+    };
+
+    beforeEach(async () => {
+      // Create a test user for login tests
+      await service.signup(
+        loginData.email,
+        loginData.password,
+        'Test User'
+      );
+    });
+
+    it('should login successfully with valid credentials and return JWT token', async () => {
+      const result = await service.login(loginData.email, loginData.password);
+
+      expect(result).toHaveProperty('user');
+      expect(result).toHaveProperty('access_token');
+      expect(result.user).toHaveProperty('id');
+      expect(result.user).toHaveProperty('email', loginData.email);
+      expect(result.user).toHaveProperty('name', 'Test User');
+      expect(result.user).not.toHaveProperty('password');
+      expect(result.access_token).toBe('mock-jwt-token');
+
+      // Verify JWT service was called with correct payload
+      expect(jwtService.sign).toHaveBeenCalledWith({
+        sub: result.user.id,
+        email: loginData.email,
+        role: 'USER',
+      });
+    });
+
+    it('should throw UnauthorizedException with invalid email', async () => {
+      await expect(
+        service.login('wrong@example.com', loginData.password)
+      ).rejects.toThrow(UnauthorizedException);
+      await expect(
+        service.login('wrong@example.com', loginData.password)
+      ).rejects.toThrow('Invalid email or password');
+    });
+
+    it('should throw UnauthorizedException with invalid password', async () => {
+      await expect(
+        service.login(loginData.email, 'wrongpassword')
+      ).rejects.toThrow(UnauthorizedException);
+      await expect(
+        service.login(loginData.email, 'wrongpassword')
+      ).rejects.toThrow('Invalid email or password');
+    });
+
+    it('should include role information in login response', async () => {
+      const result = await service.login(loginData.email, loginData.password);
+
+      expect(result.user).toHaveProperty('role');
+      expect(result.user.role).toHaveProperty('name', 'USER');
+      expect(result.user.role).toHaveProperty('description');
+    });
+
+    it('should handle database integration correctly during login', async () => {
+      const result = await service.login(loginData.email, loginData.password);
+
+      // Verify user data is correctly retrieved from database
+      const dbUser = await prismaService.user.findUnique({
+        where: { email: loginData.email },
+        include: { role: true },
+      });
+
+      expect(dbUser).toBeDefined();
+      expect(dbUser?.id).toBe(result.user.id);
+      expect(dbUser?.email).toBe(result.user.email);
+      expect(dbUser?.role?.name).toBe(result.user.role.name);
     });
   });
 });
