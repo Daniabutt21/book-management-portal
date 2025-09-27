@@ -38,11 +38,11 @@ async function main() {
   });
 
   console.log('Seeded roles:', { userRole, adminRole });
-  console.log('Seeded admin user:', { 
-    id: adminUser.id, 
-    email: adminUser.email, 
+  console.log('Seeded admin user:', {
+    id: adminUser.id,
+    email: adminUser.email,
     name: adminUser.name,
-    role: adminRole.name 
+    role: adminRole.name,
   });
 }
 

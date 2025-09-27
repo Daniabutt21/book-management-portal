@@ -239,7 +239,9 @@ describe('FeedbackController (Unit)', () => {
       ).rejects.toThrow(errorMessage);
 
       // Reset the mock after the test
-      (service.getUserFeedback as jest.Mock).mockResolvedValue(mockPaginatedResponse);
+      (service.getUserFeedback as jest.Mock).mockResolvedValue(
+        mockPaginatedResponse
+      );
     });
   });
 
