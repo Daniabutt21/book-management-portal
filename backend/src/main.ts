@@ -7,7 +7,10 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   // Enable validation pipes
-  app.useGlobalPipes(new ValidationPipe());
+  app.useGlobalPipes(new ValidationPipe({
+    transform: true,
+    whitelist: true,
+  }));
 
   // Swagger configuration
   const config = new DocumentBuilder()
@@ -15,6 +18,8 @@ async function bootstrap() {
     .setDescription('API for managing books, users, and feedback')
     .setVersion('1.0')
     .addTag('Authentication')
+    .addTag('Books')
+    .addTag('Feedback')
     .addBearerAuth(
       {
         type: 'http',

@@ -90,7 +90,7 @@ describe('BooksService Integration', () => {
       const bookWithoutOptionalFields: CreateBookDto = {
         title: 'Simple Book',
         author: 'Simple Author',
-        isbn: '978-0-123456-78-9',
+        isbn: `978-0-123456-78-${Date.now()}`,
       };
 
       const book = await service.create(bookWithoutOptionalFields);
@@ -260,6 +260,13 @@ describe('BooksService Integration', () => {
     });
 
     it('should handle ISBN conflict when updating', async () => {
+      // Create the test book first
+      const testBook = await service.create({
+        title: 'Test Book',
+        author: 'Test Author',
+        isbn: '978-0-123456-78-9',
+      });
+
       const anotherBook = await service.create({
         title: 'Another Book',
         author: 'Another Author',

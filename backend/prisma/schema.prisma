@@ -11,14 +11,15 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(cuid())
-  email     String   @unique
+  id        String    @id @default(cuid())
+  email     String    @unique
   password  String
   name      String
-  roleId    String   @default("user")
-  role      Role     @relation(fields: [roleId], references: [id])
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  roleId    String    @default("user")
+  role      Role      @relation(fields: [roleId], references: [id])
+  feedbacks Feedback[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
 
   @@map("users")
 }
@@ -35,14 +36,32 @@ model Role {
 }
 
 model Book {
-  id          String   @id @default(cuid())
+  id          String     @id @default(cuid())
   title       String
   author      String
-  isbn        String   @unique
+  isbn        String     @unique
   description String?
   publishedAt DateTime?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  feedbacks   Feedback[]
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
 
   @@map("books")
+}
+
+model Feedback {
+  id        String   @id @default(cuid())
+  rating    Int      // 1-5 star rating
+  comment   String   // User's feedback comment
+  userId    String   // Who wrote the feedback
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  bookId    String   // Which book this feedback is for
+  book      Book     @relation(fields: [bookId], references: [id], onDelete: Cascade)
+  isApproved Boolean  @default(false) // Admin moderation flag
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Ensure one feedback per user per book
+  @@unique([userId, bookId])
+  @@map("feedbacks")
 }
