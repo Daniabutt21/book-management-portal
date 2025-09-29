@@ -19,6 +19,9 @@ describe('FeedbackService Integration', () => {
   let testBook: any;
   let userRole: any;
   let adminRole: any;
+  const createdUserIds: string[] = [];
+  const createdBookIds: string[] = [];
+  const createdFeedbackIds: string[] = [];
 
   beforeAll(async () => {
     module = await Test.createTestingModule({
@@ -46,46 +49,41 @@ describe('FeedbackService Integration', () => {
   });
 
   beforeEach(async () => {
-    // Clean up ALL feedback data before each test to ensure clean state
-    await prismaService.feedback.deleteMany();
-    await prismaService.user.deleteMany({
-      where: {
-        email: {
-          in: [
-            'testuser@example.com',
-            'testuser2@example.com',
-            'adminuser@example.com',
-          ],
-        },
-      },
-    });
-    await prismaService.book.deleteMany({
-      where: {
-        isbn: {
-          in: ['978-0-123456-78-9', '978-0-987654-32-1', '978-0-555555-55-5'],
-        },
-      },
-    });
+    // Precise cleanup from previous test run (if any leftovers due to failures)
+    if (createdFeedbackIds.length) {
+      await prismaService.feedback.deleteMany({ where: { id: { in: createdFeedbackIds } } });
+      createdFeedbackIds.length = 0;
+    }
+    if (createdUserIds.length) {
+      await prismaService.user.deleteMany({ where: { id: { in: createdUserIds } } });
+      createdUserIds.length = 0;
+    }
+    if (createdBookIds.length) {
+      await prismaService.book.deleteMany({ where: { id: { in: createdBookIds } } });
+      createdBookIds.length = 0;
+    }
 
-    // Create test user
+    // Create test user with proper role reference
     testUser = await prismaService.user.create({
       data: {
         email: 'testuser@example.com',
         password: await bcrypt.hash('password123', 10),
         name: 'Test User',
-        roleId: 'user',
+        roleId: userRole.id, // Use the actual role ID from beforeAll
       },
     });
+    createdUserIds.push(testUser.id);
 
-    // Create test book
+    // Create test book with unique ISBN
     testBook = await prismaService.book.create({
       data: {
         title: 'Test Book',
         author: 'Test Author',
-        isbn: '978-0-123456-78-9',
+        isbn: `978-0-123456-78-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
         description: 'A test book for integration testing',
       },
     });
+    createdBookIds.push(testBook.id);
   });
 
   describe('create integration', () => {
@@ -183,16 +181,18 @@ describe('FeedbackService Integration', () => {
           roleId: userRole.id,
         },
       });
+      createdUserIds.push(testUser2.id);
 
       const testBook2 = await prismaService.book.create({
         data: {
           title: 'Test Book 2',
           author: 'Test Author 2',
-          isbn: `978-0-123456-78-${Date.now()}`,
+          isbn: `978-0-123456-78-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
           description: 'A second test book',
           publishedAt: new Date('2020-01-01'),
         },
       });
+      createdBookIds.push(testBook2.id);
 
       // Create multiple feedback entries for testing
       const feedbackData = [
@@ -213,10 +213,11 @@ describe('FeedbackService Integration', () => {
       ];
 
       for (const data of feedbackData) {
-        await prismaService.feedback.create({
+        const created = await prismaService.feedback.create({
           data,
           include: { user: true, book: true },
         });
+        createdFeedbackIds.push(created.id);
       }
     });
 
@@ -283,6 +284,7 @@ describe('FeedbackService Integration', () => {
         },
         include: { user: true, book: true },
       });
+      createdFeedbackIds.push(createdFeedback.id);
     });
 
     it('should return feedback by ID', async () => {
@@ -376,9 +378,10 @@ describe('FeedbackService Integration', () => {
           email: 'testuser2@example.com',
           password: await bcrypt.hash('password123', 10),
           name: 'Other User',
-          roleId: 'user',
+          roleId: userRole.id,
         },
       });
+      createdUserIds.push(otherUser.id);
 
       const updateDto: UpdateFeedbackDto = { rating: 5 };
 
@@ -452,7 +455,7 @@ describe('FeedbackService Integration', () => {
           email: 'testuser2@example.com',
           password: await bcrypt.hash('password123', 10),
           name: 'Other User',
-          roleId: 'user',
+          roleId: userRole.id,
         },
       });
 
@@ -479,6 +482,7 @@ describe('FeedbackService Integration', () => {
         },
         include: { user: true, book: true },
       });
+      createdFeedbackIds.push(createdFeedback.id);
     });
 
     it('should approve feedback successfully', async () => {
@@ -531,6 +535,7 @@ describe('FeedbackService Integration', () => {
         },
         include: { user: true, book: true },
       });
+      createdFeedbackIds.push(createdFeedback.id);
     });
 
     it('should reject feedback successfully', async () => {
@@ -578,19 +583,21 @@ describe('FeedbackService Integration', () => {
           roleId: userRole.id,
         },
       });
+      createdUserIds.push(testUser3.id);
 
       const testBook3 = await prismaService.book.create({
         data: {
           title: 'Test Book 3',
           author: 'Test Author 3',
-          isbn: `978-0-123456-79-${Date.now()}`,
+          isbn: `978-0-123456-79-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
           description: 'A third test book',
           publishedAt: new Date('2020-01-01'),
         },
       });
+      createdBookIds.push(testBook3.id);
 
       // Create approved and unapproved feedback
-      await prismaService.feedback.create({
+      const f1 = await prismaService.feedback.create({
         data: {
           rating: 5,
           comment: 'Approved feedback.',
@@ -600,8 +607,9 @@ describe('FeedbackService Integration', () => {
         },
         include: { user: true, book: true },
       });
+      createdFeedbackIds.push(f1.id);
 
-      await prismaService.feedback.create({
+      const f2 = await prismaService.feedback.create({
         data: {
           rating: 3,
           comment: 'Unapproved feedback.',
@@ -611,6 +619,7 @@ describe('FeedbackService Integration', () => {
         },
         include: { user: true, book: true },
       });
+      createdFeedbackIds.push(f2.id);
     });
 
     it('should return only approved feedback for book', async () => {
@@ -650,8 +659,9 @@ describe('FeedbackService Integration', () => {
           isbn: '978-0-987654-32-1',
         },
       });
+      createdBookIds.push(secondBook.id);
 
-      await prismaService.feedback.create({
+      const f3 = await prismaService.feedback.create({
         data: {
           rating: 4,
           comment: 'Second feedback.',
@@ -661,7 +671,24 @@ describe('FeedbackService Integration', () => {
         },
         include: { user: true, book: true },
       });
+      createdFeedbackIds.push(f3.id);
     });
+
+  afterEach(async () => {
+    // Precise cleanup of created entities in this spec
+    if (createdFeedbackIds.length) {
+      await prismaService.feedback.deleteMany({ where: { id: { in: createdFeedbackIds } } });
+      createdFeedbackIds.length = 0;
+    }
+    if (createdUserIds.length) {
+      await prismaService.user.deleteMany({ where: { id: { in: createdUserIds } } });
+      createdUserIds.length = 0;
+    }
+    if (createdBookIds.length) {
+      await prismaService.book.deleteMany({ where: { id: { in: createdBookIds } } });
+      createdBookIds.length = 0;
+    }
+  });
 
     it('should return all feedback for user', async () => {
       const result = await service.getUserFeedback(testUser.id, {});

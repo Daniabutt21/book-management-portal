@@ -35,6 +35,13 @@ describe('AuthService Integration', () => {
   });
 
   beforeEach(async () => {
+    // Ensure roles exist for tests
+    await prismaService.role.upsert({
+      where: { id: 'user' },
+      update: {},
+      create: { id: 'user', name: 'USER', description: 'Regular user' },
+    });
+
     // Clean up test data before each test
     await prismaService.user.deleteMany({
       where: {

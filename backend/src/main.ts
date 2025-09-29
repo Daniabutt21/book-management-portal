@@ -22,6 +22,7 @@ async function bootstrap() {
     .addTag('Authentication')
     .addTag('Books')
     .addTag('Feedback')
+    .addTag('Users')
     .addBearerAuth(
       {
         type: 'http',
