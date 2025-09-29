@@ -44,7 +44,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       localStorage.setItem('user', JSON.stringify(response.user));
 
       setUser(response.user);
-      router.push('/');
+      router.push('/books');
     } catch (error: any) {
       throw new Error(error.response?.data?.message || 'Login failed');
     }
@@ -58,7 +58,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       localStorage.setItem('user', JSON.stringify(response.user));
 
       setUser(response.user);
-      router.push('/');
+      router.push('/books');
     } catch (error: any) {
       throw new Error(error.response?.data?.message || 'Signup failed');
     }

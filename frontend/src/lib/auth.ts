@@ -43,8 +43,14 @@ export const authApi = {
   },
 
   getStoredUser: (): User | null => {
-    const userStr = localStorage.getItem('user');
-    return userStr ? JSON.parse(userStr) : null;
+    try {
+      const userStr = localStorage.getItem('user');
+      return userStr && userStr !== 'null' ? JSON.parse(userStr) : null;
+    } catch (error) {
+      console.error('Error parsing stored user:', error);
+      localStorage.removeItem('user');
+      return null;
+    }
   },
 
   getStoredToken: (): string | null => {
