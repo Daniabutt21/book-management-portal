@@ -208,16 +208,22 @@ export default function BooksPage() {
                       </Box>
                     </Box>
 
-                    {book.feedbacks && book.feedbacks.length > 0 && (
-                      <Box sx={{ mb: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
-                        <Rating value={avgRating(book)} precision={0.5} readOnly size="small" 
-                          sx={{ color: '#f59e0b', fontSize: { xs: '1rem', sm: '1.25rem' } }} />
-                        <Typography variant="caption" color="text.secondary" 
-                          sx={{ fontSize: { xs: '0.7rem', sm: '0.75rem' } }}>
-                          ({book.feedbacks.length})
+                    <Box sx={{ mb: 2, display: 'flex', alignItems: 'center', gap: 1, minHeight: 28 }}>
+                      {book.feedbacks && book.feedbacks.length > 0 ? (
+                        <>
+                          <Rating value={avgRating(book)} precision={0.5} readOnly size="small" 
+                            sx={{ color: '#f59e0b', fontSize: { xs: '1rem', sm: '1.25rem' } }} />
+                          <Typography variant="caption" color="text.secondary" 
+                            sx={{ fontSize: { xs: '0.7rem', sm: '0.75rem' } }}>
+                            ({book.feedbacks.length})
+                          </Typography>
+                        </>
+                      ) : (
+                        <Typography variant="caption" color="#a0aec0" sx={{ fontSize: { xs: '0.75rem', sm: '0.8rem' }, fontStyle: 'italic' }}>
+                          No reviews yet
                         </Typography>
-                      </Box>
-                    )}
+                      )}
+                    </Box>
 
                     <Box sx={{ mb: 2 }}>
                       <Typography variant="caption" fontWeight={600} color="#718096" sx={{ 
@@ -276,15 +282,6 @@ export default function BooksPage() {
                             {book.isbn.substring(0, 18)}{book.isbn.length > 18 ? '...' : ''}
                           </Typography>
                         </Box>
-
-                        {!book.feedbacks?.length && (
-                          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-                            <RateReview sx={{ fontSize: { xs: 16, sm: 18 }, color: '#cbd5e0' }} />
-                            <Typography color="#a0aec0" sx={{ fontSize: { xs: '0.8rem', sm: '0.875rem' } }}>
-                              No reviews yet
-                            </Typography>
-                          </Box>
-                        )}
                       </Box>
                     </Box>
 

@@ -79,6 +79,15 @@ export class BooksService {
         orderBy: {
           createdAt: 'desc',
         },
+        include: {
+          feedbacks: {
+            where: { isApproved: true },
+            select: {
+              id: true,
+              rating: true,
+            },
+          },
+        },
       }),
       this.prisma.book.count({ where }),
     ]);

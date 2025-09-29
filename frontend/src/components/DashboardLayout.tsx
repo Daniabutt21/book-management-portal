@@ -22,6 +22,7 @@ import {
   Menu as MenuIcon,
   Book as BookIcon,
   Logout as LogoutIcon,
+  AdminPanelSettings as AdminIcon,
 } from '@mui/icons-material';
 import Link from 'next/link';
 import { useAuth } from '@/hooks/useAuth';
@@ -32,13 +33,16 @@ interface DashboardLayoutProps {
   children: ReactNode;
 }
 
-const menuItems = [
-  { text: 'Books', icon: <BookIcon />, href: '/books' },
-];
-
 export default function DashboardLayout({ children }: DashboardLayoutProps) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const { user, logout } = useAuth();
+
+  const menuItems = [
+    { text: 'Books', icon: <BookIcon />, href: '/books' },
+    ...(user?.role?.name === 'ADMIN' ? [
+      { text: 'Moderate Reviews', icon: <AdminIcon />, href: '/admin/feedback' }
+    ] : [])
+  ];
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
