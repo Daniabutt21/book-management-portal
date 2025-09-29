@@ -42,8 +42,9 @@ export default function NewBookPage() {
         publishedAt: formData.publishedAt ? new Date(formData.publishedAt).toISOString() : null
       });
       router.push('/books');
-    } catch (err: any) {
-      setError(err.response?.data?.message || err.message || 'Failed to create book');
+    } catch (err) {
+      const error = err as { response?: { data?: { message?: string } }; message?: string };
+      setError(error.response?.data?.message || error.message || 'Failed to create book');
     } finally {
       setLoading(false);
     }

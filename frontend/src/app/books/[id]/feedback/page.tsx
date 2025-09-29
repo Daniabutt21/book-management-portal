@@ -39,7 +39,7 @@ export default function FeedbackPage() {
   const [success, setSuccess] = useState(false);
   const [rating, setRating] = useState(0);
   const [comment, setComment] = useState('');
-  const { user, isAuthenticated } = useAuth();
+  const { isAuthenticated } = useAuth();
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -47,6 +47,7 @@ export default function FeedbackPage() {
       return;
     }
     if (bookId) fetchBook();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [bookId, isAuthenticated, router]);
 
   const fetchBook = async () => {
@@ -54,8 +55,9 @@ export default function FeedbackPage() {
       setLoading(true);
       const res = await apiClient.get(`/books/${bookId}`);
       setBook(res.data);
-    } catch (err: any) {
-      setError(err.response?.data?.message || err.message || 'Failed to load book');
+    } catch (err) {
+      const error = err as { response?: { data?: { message?: string } }; message?: string };
+      setError(error.response?.data?.message || error.message || 'Failed to load book');
     } finally {
       setLoading(false);
     }
@@ -88,8 +90,9 @@ export default function FeedbackPage() {
       setTimeout(() => {
         router.push(`/books/${bookId}`);
       }, 1500);
-    } catch (err: any) {
-      setError(err.response?.data?.message || err.message || 'Failed to submit review');
+    } catch (err) {
+      const error = err as { response?: { data?: { message?: string } }; message?: string };
+      setError(error.response?.data?.message || error.message || 'Failed to submit review');
     } finally {
       setSubmitting(false);
     }

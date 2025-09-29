@@ -18,7 +18,6 @@ import {
   Person,
   CalendarMonth,
   Tag,
-  RateReview,
 } from '@mui/icons-material';
 import Link from 'next/link';
 import { useAuth } from '@/hooks/useAuth';

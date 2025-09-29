@@ -4,12 +4,9 @@ import { ReactNode, useState } from 'react';
 import {
   Box,
   Drawer,
-  AppBar,
-  Toolbar,
   List,
   Typography,
   Divider,
-  IconButton,
   ListItem,
   ListItemButton,
   ListItemIcon,
@@ -19,7 +16,6 @@ import {
   Button,
 } from '@mui/material';
 import {
-  Menu as MenuIcon,
   Book as BookIcon,
   Logout as LogoutIcon,
   AdminPanelSettings as AdminIcon,

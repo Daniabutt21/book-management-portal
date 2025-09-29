@@ -12,15 +12,12 @@ import {
   Divider,
   Avatar,
   Rating,
-  Chip,
-  IconButton,
 } from '@mui/material';
 import {
   ArrowBack,
   Edit,
   Delete,
   RateReview,
-  Person,
   CalendarMonth,
   Tag,
 } from '@mui/icons-material';
@@ -66,6 +63,7 @@ export default function BookDetailPage() {
     if (bookId) {
       fetchData();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [bookId]);
 
   const fetchData = async () => {
@@ -91,7 +89,7 @@ export default function BookDetailPage() {
     try {
       await apiClient.delete(`/books/${bookId}`);
       router.push('/books');
-    } catch (err) {
+    } catch {
       alert('Failed to delete book');
     }
   };

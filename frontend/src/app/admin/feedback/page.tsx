@@ -14,8 +14,7 @@ import {
   Tabs,
   Tab,
 } from '@mui/material';
-import { CheckCircle, Cancel, Book } from '@mui/icons-material';
-import Link from 'next/link';
+import { CheckCircle, Cancel } from '@mui/icons-material';
 import { useAuth } from '@/hooks/useAuth';
 import DashboardLayout from '@/components/DashboardLayout';
 import { apiClient } from '@/lib/api';
@@ -60,8 +59,9 @@ export default function AdminFeedbackPage() {
       setLoading(true);
       const res = await apiClient.get('/feedback');
       setFeedbacks(res.data.data || []);
-    } catch (err: any) {
-      setError(err.response?.data?.message || err.message || 'Failed to load feedback');
+    } catch (err) {
+      const error = err as { response?: { data?: { message?: string } }; message?: string };
+      setError(error.response?.data?.message || error.message || 'Failed to load feedback');
     } finally {
       setLoading(false);
     }
@@ -71,7 +71,7 @@ export default function AdminFeedbackPage() {
     try {
       await apiClient.patch(`/feedback/${id}`, { isApproved: true });
       setFeedbacks(feedbacks.map(f => f.id === id ? { ...f, isApproved: true } : f));
-    } catch (err) {
+    } catch {
       alert('Failed to approve feedback');
     }
   };
@@ -81,7 +81,7 @@ export default function AdminFeedbackPage() {
     try {
       await apiClient.delete(`/feedback/${id}`);
       setFeedbacks(feedbacks.filter(f => f.id !== id));
-    } catch (err) {
+    } catch {
       alert('Failed to delete feedback');
     }
   };

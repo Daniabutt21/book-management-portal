@@ -2,21 +2,18 @@
 
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { 
-  Container, 
+import {
+  Container,
   Typography, 
   Box, 
   Button, 
   Card, 
-  CardContent, 
-  Grid, 
+  CardContent,
   AppBar,
   Toolbar,
   IconButton,
   Menu,
   MenuItem,
-  Avatar,
-  Chip,
 } from '@mui/material';
 import {
   Menu as MenuIcon,
@@ -31,7 +28,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { useState } from 'react';
 
 export default function Home() {
-  const { isAuthenticated, isLoading, user, logout } = useAuth();
+  const { isAuthenticated, isLoading } = useAuth();
   const router = useRouter();
   const [mobileMenuAnchor, setMobileMenuAnchor] = useState<null | HTMLElement>(null);
 
@@ -190,8 +187,8 @@ export default function Home() {
         }}
       >
         <Container maxWidth="lg">
-          <Grid container spacing={4} alignItems="center">
-            <Grid item xs={12} md={7}>
+          <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr' }, alignItems: 'center' }}>
+            <Box>
               <Typography 
                 variant="h2" 
                 fontWeight={700} 
@@ -237,9 +234,9 @@ export default function Home() {
               >
                 Get Started
               </Button>
-            </Grid>
+            </Box>
 
-          </Grid>
+          </Box>
         </Container>
       </Box>
 
@@ -265,8 +262,8 @@ export default function Home() {
             Features
           </Typography>
           
-          <Grid container spacing={{ xs: 2, sm: 3, md: 4 }} justifyContent="center">
-            <Grid item xs={12} sm={6} md={6} lg={6} sx={{ display: 'flex' }}>
+          <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)' }, gap: { xs: 2, sm: 3, md: 4 }, justifyContent: 'center' }}>
+            <Box sx={{ display: 'flex' }}>
               <Card sx={{ 
                 width: '100%',
                 textAlign: 'center',
@@ -306,13 +303,13 @@ export default function Home() {
                     Browse Books
                   </Typography>
                   <Typography variant="body1" color="text.secondary">
-                    Search and filter through our collection.
+                    Search and filter through our collection
                   </Typography>
                 </CardContent>
               </Card>
-            </Grid>
+            </Box>
 
-            <Grid item xs={12} sm={6} md={6} lg={6} sx={{ display: 'flex' }}>
+            <Box sx={{ display: 'flex' }}>
               <Card sx={{ 
                 width: '100%',
                 textAlign: 'center',
@@ -352,13 +349,13 @@ export default function Home() {
                     Leave Feedback
                   </Typography>
                   <Typography variant="body1" color="text.secondary">
-                    Rate and review books you've read.
+                    Rate and review books you&apos;ve read.
                   </Typography>
                 </CardContent>
               </Card>
-            </Grid>
+            </Box>
 
-            <Grid item xs={12} sm={6} md={6} lg={6} sx={{ display: 'flex' }}>
+            <Box sx={{ display: 'flex' }}>
               <Card sx={{ 
                 width: '100%',
                 textAlign: 'center',
@@ -402,9 +399,9 @@ export default function Home() {
                   </Typography>
                 </CardContent>
               </Card>
-            </Grid>
+            </Box>
 
-            <Grid item xs={12} sm={6} md={6} lg={6} sx={{ display: 'flex' }}>
+            <Box sx={{ display: 'flex' }}>
               <Card sx={{ 
                 width: '100%',
                 textAlign: 'center',
@@ -448,8 +445,8 @@ export default function Home() {
                   </Typography>
                 </CardContent>
               </Card>
-            </Grid>
-          </Grid>
+            </Box>
+          </Box>
         </Container>
       </Box>
 
@@ -463,8 +460,8 @@ export default function Home() {
         }}
       >
         <Container maxWidth="md">
-          <Grid container spacing={{ xs: 2, sm: 3 }} justifyContent="space-between">
-            <Grid item xs={12} md={5}>
+          <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '5fr 3fr 3fr' }, gap: { xs: 2, sm: 3 } }}>
+            <Box>
               <Box display="flex" alignItems="center" mb={1.5}>
                 <BookIcon sx={{ color: 'secondary.main', mr: 1, fontSize: 24 }} />
                 <Typography variant="h6" fontWeight={600} fontSize="1rem">
@@ -474,9 +471,9 @@ export default function Home() {
               <Typography variant="body2" sx={{ opacity: 0.85, lineHeight: 1.6, fontSize: '0.875rem' }}>
                 Browse, review, and manage your book collection with ease.
               </Typography>
-            </Grid>
+            </Box>
 
-            <Grid item xs={6} md={3}>
+            <Box>
               <Typography variant="subtitle2" fontWeight={600} gutterBottom sx={{ mb: 1.5 }}>
                 Resources
               </Typography>
@@ -518,9 +515,9 @@ export default function Home() {
                   Privacy Policy
                 </Typography>
               </Box>
-            </Grid>
+            </Box>
 
-            <Grid item xs={6} md={3}>
+            <Box>
               <Typography variant="subtitle2" fontWeight={600} gutterBottom sx={{ mb: 1.5 }}>
                 Company
               </Typography>
@@ -562,8 +559,8 @@ export default function Home() {
                   Terms of Service
                 </Typography>
               </Box>
-            </Grid>
-          </Grid>
+            </Box>
+          </Box>
 
           <Box 
             sx={{ 

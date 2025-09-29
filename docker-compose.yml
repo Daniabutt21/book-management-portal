@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "3001:3001"
+    environment:
+      - DATABASE_URL=file:./dev.db
+      - JWT_SECRET=your-secret-key-change-in-production
+      - PORT=3001
+    volumes:
+      - ./backend/prisma:/app/prisma
+    command: sh -c "npx prisma migrate deploy && npm run start:prod"
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_API_URL=http://localhost:3001
+    depends_on:
+      - backend
+
+networks:
+  default:
+    name: book-management-network
+

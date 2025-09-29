@@ -42,6 +42,7 @@ export default function EditBookPage() {
 
   useEffect(() => {
     if (bookId) fetchBook();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [bookId]);
 
   const fetchBook = async () => {
@@ -78,8 +79,9 @@ export default function EditBookPage() {
         publishedAt: formData.publishedAt ? new Date(formData.publishedAt).toISOString() : null
       });
       router.push(`/books/${bookId}`);
-    } catch (err: any) {
-      setError(err.response?.data?.message || err.message || 'Failed to update book');
+    } catch (err) {
+      const error = err as { response?: { data?: { message?: string } }; message?: string };
+      setError(error.response?.data?.message || error.message || 'Failed to update book');
     } finally {
       setSaving(false);
     }

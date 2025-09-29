@@ -14,7 +14,6 @@ import {
   Alert,
   AppBar,
   Toolbar,
-  Grid,
 } from '@mui/material';
 import {
   Book as BookIcon,
@@ -36,7 +35,6 @@ export default function LoginPage() {
   const {
     register,
     handleSubmit,
-    setValue,
     formState: { errors, isSubmitting },
   } = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
@@ -47,8 +45,9 @@ export default function LoginPage() {
 
     try {
       await login(data.email, data.password);
-    } catch (err: any) {
-      setError(err.message || 'Login failed');
+    } catch (err) {
+      const error = err as { message?: string };
+      setError(error.message || 'Login failed');
     }
   };
 
@@ -209,7 +208,7 @@ export default function LoginPage() {
 
                 <Box textAlign="center">
                   <Typography variant="body2">
-                    Don't have an account?{' '}
+                    Don&apos;t have an account?{' '}
                     <Link href="/auth/signup">Sign up here</Link>
                   </Typography>
                 </Box>
@@ -229,8 +228,8 @@ export default function LoginPage() {
         }}
       >
         <Container maxWidth="md">
-          <Grid container spacing={{ xs: 2, sm: 3 }} justifyContent="space-between">
-            <Grid item xs={12} md={5}>
+          <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '5fr 3fr 3fr' }, gap: { xs: 2, sm: 3 } }}>
+            <Box>
               <Box display="flex" alignItems="center" mb={1.5}>
                 <BookIcon sx={{ color: 'secondary.main', mr: 1, fontSize: 24 }} />
                 <Typography variant="h6" fontWeight={600} fontSize="1rem">
@@ -240,9 +239,9 @@ export default function LoginPage() {
               <Typography variant="body2" sx={{ opacity: 0.85, lineHeight: 1.6, fontSize: '0.875rem' }}>
                 Browse, review, and manage your book collection with ease.
               </Typography>
-            </Grid>
+            </Box>
 
-            <Grid item xs={6} md={3}>
+            <Box>
               <Typography variant="subtitle2" fontWeight={600} gutterBottom sx={{ mb: 1.5 }}>
                 Resources
               </Typography>
@@ -284,9 +283,9 @@ export default function LoginPage() {
                   Privacy Policy
                 </Typography>
               </Box>
-            </Grid>
+            </Box>
 
-            <Grid item xs={6} md={3}>
+            <Box>
               <Typography variant="subtitle2" fontWeight={600} gutterBottom sx={{ mb: 1.5 }}>
                 Company
               </Typography>
@@ -328,8 +327,8 @@ export default function LoginPage() {
                   Terms of Service
                 </Typography>
               </Box>
-            </Grid>
-          </Grid>
+            </Box>
+          </Box>
 
           <Box 
             sx={{ 
