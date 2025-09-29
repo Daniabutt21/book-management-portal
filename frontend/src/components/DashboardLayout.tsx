@@ -14,11 +14,16 @@ import {
   Avatar,
   Chip,
   Button,
+  IconButton,
+  AppBar,
+  Toolbar,
 } from '@mui/material';
 import {
   Book as BookIcon,
   Logout as LogoutIcon,
   AdminPanelSettings as AdminIcon,
+  People as PeopleIcon,
+  Menu as MenuIcon,
 } from '@mui/icons-material';
 import Link from 'next/link';
 import { useAuth } from '@/hooks/useAuth';
@@ -37,6 +42,11 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
     { text: 'Books', icon: <BookIcon />, href: '/books' },
     ...(user?.role?.name === 'ADMIN'
       ? [
+          {
+            text: 'Manage Users',
+            icon: <PeopleIcon />,
+            href: '/admin/users',
+          },
           {
             text: 'Moderate Reviews',
             icon: <AdminIcon />,
@@ -186,6 +196,29 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
           minHeight: '100vh',
         }}
       >
+        <AppBar
+          position="sticky"
+          sx={{
+            display: { xs: 'block', sm: 'none' },
+            backgroundColor: '#1A2B48',
+            boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+            borderRadius: 0,
+          }}
+        >
+          <Toolbar sx={{ minHeight: { xs: 56 } }}>
+            <IconButton
+              color="inherit"
+              edge="start"
+              onClick={handleDrawerToggle}
+              sx={{ mr: 2 }}
+            >
+              <MenuIcon />
+            </IconButton>
+            <Typography variant="h6" noWrap component="div" fontWeight={600}>
+              Book Management
+            </Typography>
+          </Toolbar>
+        </AppBar>
         {children}
       </Box>
     </Box>
