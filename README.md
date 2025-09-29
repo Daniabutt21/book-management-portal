@@ -1,16 +1,21 @@
 # book-management-portal
 
+[![CI Pipeline](https://github.com/YOUR_USERNAME/book-management-portal/actions/workflows/ci.yml/badge.svg)](https://github.com/YOUR_USERNAME/book-management-portal/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
+
 Full-stack Book Management Portal built with Next.js, NestJS, Prisma, and SQLite. Features authentication, role-based access, book CRUD operations, feedback system, API docs, and testing.
 
-## 🚀 Features
+## Features
 
 ### Authentication & Authorization
+
 - JWT-based authentication with secure token storage
 - Role-based access control (Admin & User roles)
 - Protected routes on both frontend and backend
 - Automatic token refresh handling
 
 ### Book Management
+
 - **Admin**: Full CRUD operations (Create, Read, Update, Delete)
 - **All Users**: Browse books with pagination and filtering
 - Search by title, author, or ISBN
@@ -18,20 +23,23 @@ Full-stack Book Management Portal built with Next.js, NestJS, Prisma, and SQLite
 - Responsive card-based UI with consistent sizing
 
 ### Feedback System
+
 - **Users**: Submit ratings (1-5 stars) and reviews on books
 - **Admins**: Moderate feedback (approve/reject)
 - View aggregated ratings and review counts
 - Filter feedback by status (All, Pending, Approved)
 
 ### Admin Dashboard
+
 - Moderate user reviews
 - Manage book collection
 - View feedback statistics
 - User-friendly interface with tabs and filters
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 ### Backend
+
 - **Framework**: NestJS (TypeScript)
 - **Database**: SQLite with Prisma ORM
 - **Authentication**: JWT (Passport.js)
@@ -40,6 +48,7 @@ Full-stack Book Management Portal built with Next.js, NestJS, Prisma, and SQLite
 - **Testing**: Jest (unit + integration tests)
 
 ### Frontend
+
 - **Framework**: Next.js 13+ (App Router)
 - **Language**: TypeScript
 - **UI Library**: Material UI (MUI)
@@ -49,11 +58,12 @@ Full-stack Book Management Portal built with Next.js, NestJS, Prisma, and SQLite
 - **Styling**: MUI's sx prop, responsive design
 
 ### DevOps
+
 - **Containerization**: Docker & Docker Compose
 - **CI/CD**: GitHub Actions
 - **Version Control**: Git
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 book-management-portal/
@@ -134,7 +144,7 @@ book-management-portal/
 └── README.md                    # This file
 ```
 
-## 🚀 Getting Started
+## Getting Started
 
 ### Prerequisites
 
@@ -145,17 +155,20 @@ book-management-portal/
 ### Option 1: Docker Setup (Recommended)
 
 1. **Clone the repository**
+
    ```bash
    git clone <repository-url>
    cd book-management-portal
    ```
 
 2. **Set up environment variables**
+
    ```bash
    cp env.example .env
    ```
 
 3. **Build and run containers**
+
    ```bash
    docker-compose build
    docker-compose up -d
@@ -176,21 +189,25 @@ book-management-portal/
 #### Backend Setup
 
 1. **Navigate to backend directory**
+
    ```bash
    cd backend
    ```
 
 2. **Install dependencies**
+
    ```bash
    npm install
    ```
 
 3. **Set up environment variables**
+
    ```bash
    cp ../env.example .env
    ```
 
 4. **Set up database**
+
    ```bash
    npx prisma generate
    npx prisma migrate deploy
@@ -198,6 +215,7 @@ book-management-portal/
    ```
 
 5. **Start development server**
+
    ```bash
    npm run start:dev
    ```
@@ -207,29 +225,33 @@ book-management-portal/
 #### Frontend Setup
 
 1. **Open a new terminal and navigate to frontend**
+
    ```bash
    cd frontend
    ```
 
 2. **Install dependencies**
+
    ```bash
    npm install
    ```
 
 3. **Set up environment variables**
+
    ```bash
    # Create .env.local file
    echo 'NEXT_PUBLIC_API_URL=http://localhost:3001' > .env.local
    ```
 
 4. **Start development server**
+
    ```bash
    npm run dev
    ```
 
    Frontend will be available at http://localhost:3000
 
-## 🧪 Testing
+## Testing
 
 ### Backend Tests
 
@@ -246,6 +268,7 @@ npm run test
 - **Integration Tests**: Test component interactions with real database
 
 Example test files:
+
 - `src/auth/__tests__/auth.service.spec.ts` - Unit tests
 - `src/auth/__tests__/auth.integration.spec.ts` - Integration tests
 
@@ -258,10 +281,12 @@ The backend API is fully documented using Swagger/OpenAPI.
 ### Key Endpoints
 
 #### Authentication
+
 - `POST /auth/signup` - Register new user
 - `POST /auth/login` - Login and get JWT token
 
 #### Books
+
 - `GET /books` - List books (paginated)
 - `GET /books/:id` - Get book details
 - `POST /books` - Create book (Admin only)
@@ -269,6 +294,7 @@ The backend API is fully documented using Swagger/OpenAPI.
 - `DELETE /books/:id` - Delete book (Admin only)
 
 #### Feedback
+
 - `GET /feedback` - List all feedback (Admin only)
 - `GET /feedback/book/:bookId` - Get feedback for a book
 - `POST /feedback` - Submit feedback (Authenticated)
@@ -276,32 +302,37 @@ The backend API is fully documented using Swagger/OpenAPI.
 - `DELETE /feedback/:id` - Delete feedback (Admin only)
 
 #### Users
+
 - `GET /users/me` - Get current user profile
 - `GET /users` - List users (Admin only)
 - `PATCH /users/:id/role` - Update user role (Admin only)
 
-## 🗄️ Database Schema
+## Database Schema
 
 ### Models
 
 **User**
+
 - id, name, email, password (hashed)
 - roleId (foreign key to Role)
 - createdAt, updatedAt
 
 **Role**
+
 - id, name (USER, ADMIN)
 
 **Book**
+
 - id, title, author, isbn, description
 - publishedAt, createdAt, updatedAt
 
 **Feedback**
+
 - id, rating (1-5), comment
 - userId, bookId (foreign keys)
 - isApproved, createdAt, updatedAt
 
-## 🎨 Design Decisions
+## Design Decisions
 
 ### Architecture
 
@@ -339,23 +370,26 @@ The backend API is fully documented using Swagger/OpenAPI.
 
 **Git Hygiene**: Clear commit messages with conventional format.
 
-## 🔐 Default Credentials
+## Default Credentials
 
 After seeding the database, you can login with:
 
 **Admin User:**
+
 - Email: admin@example.com
 - Password: Admin123!
 
 **Regular User:**
+
 - Email: user@example.com
 - Password: User123!
 
-## 📝 Environment Variables
+## Environment Variables
 
 See `env.example` for all required environment variables:
 
 ### Backend (.env in backend/)
+
 ```env
 DATABASE_URL="file:./dev.db"
 JWT_SECRET="your-super-secret-jwt-key"
@@ -365,16 +399,17 @@ NODE_ENV="development"
 ```
 
 ### Frontend (.env.local in frontend/)
+
 ```env
 NEXT_PUBLIC_API_URL="http://localhost:3001"
 ```
 
-## 🚢 Deployment
+## Deployment
 
 ### Docker Deployment
 
 The application is containerized and ready for deployment
 
-## 📄 License
+## License
 
 This project is licensed under the MIT License.
