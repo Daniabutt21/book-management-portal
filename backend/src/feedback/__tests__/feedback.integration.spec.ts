@@ -51,15 +51,21 @@ describe('FeedbackService Integration', () => {
   beforeEach(async () => {
     // Precise cleanup from previous test run (if any leftovers due to failures)
     if (createdFeedbackIds.length) {
-      await prismaService.feedback.deleteMany({ where: { id: { in: createdFeedbackIds } } });
+      await prismaService.feedback.deleteMany({
+        where: { id: { in: createdFeedbackIds } },
+      });
       createdFeedbackIds.length = 0;
     }
     if (createdUserIds.length) {
-      await prismaService.user.deleteMany({ where: { id: { in: createdUserIds } } });
+      await prismaService.user.deleteMany({
+        where: { id: { in: createdUserIds } },
+      });
       createdUserIds.length = 0;
     }
     if (createdBookIds.length) {
-      await prismaService.book.deleteMany({ where: { id: { in: createdBookIds } } });
+      await prismaService.book.deleteMany({
+        where: { id: { in: createdBookIds } },
+      });
       createdBookIds.length = 0;
     }
 
@@ -674,21 +680,27 @@ describe('FeedbackService Integration', () => {
       createdFeedbackIds.push(f3.id);
     });
 
-  afterEach(async () => {
-    // Precise cleanup of created entities in this spec
-    if (createdFeedbackIds.length) {
-      await prismaService.feedback.deleteMany({ where: { id: { in: createdFeedbackIds } } });
-      createdFeedbackIds.length = 0;
-    }
-    if (createdUserIds.length) {
-      await prismaService.user.deleteMany({ where: { id: { in: createdUserIds } } });
-      createdUserIds.length = 0;
-    }
-    if (createdBookIds.length) {
-      await prismaService.book.deleteMany({ where: { id: { in: createdBookIds } } });
-      createdBookIds.length = 0;
-    }
-  });
+    afterEach(async () => {
+      // Precise cleanup of created entities in this spec
+      if (createdFeedbackIds.length) {
+        await prismaService.feedback.deleteMany({
+          where: { id: { in: createdFeedbackIds } },
+        });
+        createdFeedbackIds.length = 0;
+      }
+      if (createdUserIds.length) {
+        await prismaService.user.deleteMany({
+          where: { id: { in: createdUserIds } },
+        });
+        createdUserIds.length = 0;
+      }
+      if (createdBookIds.length) {
+        await prismaService.book.deleteMany({
+          where: { id: { in: createdBookIds } },
+        });
+        createdBookIds.length = 0;
+      }
+    });
 
     it('should return all feedback for user', async () => {
       const result = await service.getUserFeedback(testUser.id, {});
