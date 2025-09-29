@@ -49,25 +49,21 @@ describe('FeedbackService Integration', () => {
   });
 
   beforeEach(async () => {
-    // Precise cleanup from previous test run (if any leftovers due to failures)
-    if (createdFeedbackIds.length) {
-      await prismaService.feedback.deleteMany({
-        where: { id: { in: createdFeedbackIds } },
-      });
-      createdFeedbackIds.length = 0;
-    }
-    if (createdUserIds.length) {
-      await prismaService.user.deleteMany({
-        where: { id: { in: createdUserIds } },
-      });
-      createdUserIds.length = 0;
-    }
-    if (createdBookIds.length) {
-      await prismaService.book.deleteMany({
-        where: { id: { in: createdBookIds } },
-      });
-      createdBookIds.length = 0;
-    }
+    // Clean up ALL test data to ensure clean state
+    await prismaService.feedback.deleteMany({});
+    await prismaService.book.deleteMany({});
+    await prismaService.user.deleteMany({
+      where: {
+        email: {
+          contains: '@example.com'
+        }
+      }
+    });
+    
+    // Clear tracking arrays
+    createdFeedbackIds.length = 0;
+    createdUserIds.length = 0;
+    createdBookIds.length = 0;
 
     // Create test user with proper role reference
     testUser = await prismaService.user.create({

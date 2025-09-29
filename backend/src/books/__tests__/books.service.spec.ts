@@ -152,6 +152,12 @@ describe('BooksService (Unit)', () => {
         skip: 0,
         take: 10,
         orderBy: { createdAt: 'desc' },
+        include: {
+          feedbacks: {
+            where: { isApproved: true },
+            select: { id: true, rating: true },
+          },
+        },
       });
       expect(prismaService.book.count).toHaveBeenCalledWith({
         where: {
@@ -190,6 +196,12 @@ describe('BooksService (Unit)', () => {
         skip: 5,
         take: 5,
         orderBy: { createdAt: 'desc' },
+        include: {
+          feedbacks: {
+            where: { isApproved: true },
+            select: { id: true, rating: true },
+          },
+        },
       });
       expect(result.pagination).toEqual({
         page: 2,
@@ -216,6 +228,12 @@ describe('BooksService (Unit)', () => {
         skip: 0,
         take: 10,
         orderBy: { createdAt: 'desc' },
+        include: {
+          feedbacks: {
+            where: { isApproved: true },
+            select: { id: true, rating: true },
+          },
+        },
       });
       expect(result.pagination.page).toBe(1);
       expect(result.pagination.limit).toBe(10);
