@@ -27,6 +27,13 @@ export class AuthService {
     // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
 
+    // Ensure default user role exists and get its ID
+    const userRole = await this.prisma.role.upsert({
+      where: { id: 'user' },
+      update: {},
+      create: { id: 'user', name: 'USER', description: 'Regular user' },
+    });
+
     // Create user
     const user = await this.prisma.user.create({
       data: {
@@ -34,7 +41,7 @@ export class AuthService {
         password: hashedPassword,
         name,
         // Default role is user
-        roleId: 'user',
+        roleId: userRole.id,
       },
     });
 
