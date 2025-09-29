@@ -2,269 +2,235 @@
 
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
 import {
-  Container,
   Typography,
   Box,
   Card,
-  CardContent,
   TextField,
   Button,
   Rating,
   Alert,
   CircularProgress,
-  Chip,
+  Avatar,
 } from '@mui/material';
+import { ArrowBack, Send } from '@mui/icons-material';
 import Link from 'next/link';
 import { useAuth } from '@/hooks/useAuth';
-
-const feedbackSchema = z.object({
-  rating: z.number().min(1, 'Please select a rating').max(5, 'Rating must be between 1 and 5'),
-  comment: z.string().min(10, 'Comment must be at least 10 characters').max(500, 'Comment must be less than 500 characters'),
-});
-
-type FeedbackFormData = z.infer<typeof feedbackSchema>;
+import { apiClient } from '@/lib/api';
+import DashboardLayout from '@/components/DashboardLayout';
 
 interface Book {
   id: string;
   title: string;
   author: string;
   isbn: string;
-  publishedYear: number;
-  genre: string;
-  description: string;
+  description: string | null;
+  publishedAt: string | null;
 }
 
 export default function FeedbackPage() {
   const params = useParams();
   const router = useRouter();
   const bookId = params.id as string;
-  
   const [book, setBook] = useState<Book | null>(null);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
-  const [error, setError] = useState<string>('');
+  const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
+  const [rating, setRating] = useState(0);
+  const [comment, setComment] = useState('');
   const { user, isAuthenticated } = useAuth();
-
-  const {
-    register,
-    handleSubmit,
-    setValue,
-    watch,
-    formState: { errors },
-  } = useForm<FeedbackFormData>({
-    resolver: zodResolver(feedbackSchema),
-    defaultValues: {
-      rating: 0,
-      comment: '',
-    },
-  });
-
-  const rating = watch('rating');
 
   useEffect(() => {
     if (!isAuthenticated) {
       router.push('/auth/login');
       return;
     }
-    
-    if (bookId) {
-      fetchBookDetails();
-    }
+    if (bookId) fetchBook();
   }, [bookId, isAuthenticated, router]);
 
-  const fetchBookDetails = async () => {
+  const fetchBook = async () => {
     try {
       setLoading(true);
-      const response = await fetch(`http://localhost:3001/books/${bookId}`);
-      if (!response.ok) {
-        throw new Error('Failed to fetch book details');
-      }
-      const data = await response.json();
-      setBook(data);
+      const res = await apiClient.get(`/books/${bookId}`);
+      setBook(res.data);
     } catch (err: any) {
-      setError(err.message || 'Failed to load book details');
+      setError(err.response?.data?.message || err.message || 'Failed to load book');
     } finally {
       setLoading(false);
     }
   };
 
-  const onSubmit = async (data: FeedbackFormData) => {
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (rating === 0) {
+      setError('Please select a rating');
+      return;
+    }
+    
+    if (comment.length < 10) {
+      setError('Comment must be at least 10 characters');
+      return;
+    }
+
+    setError('');
+    setSubmitting(true);
+
     try {
-      setSubmitting(true);
-      setError('');
-
-      const token = localStorage.getItem('auth_token');
-      const response = await fetch(`http://localhost:3001/feedback`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          bookId,
-          rating: data.rating,
-          comment: data.comment,
-        }),
+      await apiClient.post('/feedback', {
+        bookId,
+        rating,
+        comment,
       });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Failed to submit feedback');
-      }
 
       setSuccess(true);
       setTimeout(() => {
         router.push(`/books/${bookId}`);
-      }, 2000);
+      }, 1500);
     } catch (err: any) {
-      setError(err.message || 'Failed to submit feedback');
+      setError(err.response?.data?.message || err.message || 'Failed to submit review');
     } finally {
       setSubmitting(false);
     }
   };
 
-  if (!isAuthenticated) {
-    return null; // Will redirect
-  }
+  if (!isAuthenticated) return null;
 
   if (loading) {
     return (
-      <Container maxWidth="md" sx={{ py: 4 }}>
-        <Box display="flex" justifyContent="center" alignItems="center" minHeight="400px">
+      <DashboardLayout>
+        <Box display="flex" justifyContent="center" alignItems="center" minHeight="60vh">
           <CircularProgress />
         </Box>
-      </Container>
-    );
-  }
-
-  if (error && !book) {
-    return (
-      <Container maxWidth="md" sx={{ py: 4 }}>
-        <Alert severity="error" sx={{ mb: 2 }}>
-          {error}
-        </Alert>
-        <Button component={Link} href="/books" variant="outlined">
-          Back to Books
-        </Button>
-      </Container>
+      </DashboardLayout>
     );
   }
 
   if (success) {
     return (
-      <Container maxWidth="md" sx={{ py: 4 }}>
-        <Card>
-          <CardContent sx={{ textAlign: 'center', py: 6 }}>
-            <Typography variant="h5" color="success.main" gutterBottom>
-              Feedback Submitted Successfully!
-            </Typography>
-            <Typography variant="body1" color="text.secondary" gutterBottom>
-              Thank you for your review. It will be reviewed by our moderators before being published.
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
-              Redirecting to book details...
-            </Typography>
-          </CardContent>
-        </Card>
-      </Container>
+      <DashboardLayout>
+        <Box sx={{ p: { xs: 2, sm: 3, md: 4 }, maxWidth: 600, mx: 'auto', minHeight: '60vh', display: 'flex', alignItems: 'center' }}>
+          <Card sx={{ width: '100%', textAlign: 'center', py: 6, border: '1px solid #e2e8f0', boxShadow: '0 1px 3px rgba(0,0,0,0.06)' }}>
+            <Box sx={{ p: 3 }}>
+              <Typography variant="h5" fontWeight={700} color="#10b981" gutterBottom>
+                Review Submitted!
+              </Typography>
+              <Typography color="text.secondary" sx={{ mb: 1 }}>
+                Thank you for your feedback. Your review will be visible once approved by moderators.
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                Redirecting...
+              </Typography>
+            </Box>
+          </Card>
+        </Box>
+      </DashboardLayout>
     );
   }
 
   return (
-    <Container maxWidth="md" sx={{ py: 4 }}>
-      <Box mb={4}>
-        <Button component={Link} href={`/books/${bookId}`} variant="outlined" sx={{ mb: 2 }}>
-          ← Back to Book Details
+    <DashboardLayout>
+      <Box sx={{ p: { xs: 2, sm: 3, md: 4 }, maxWidth: 700, mx: 'auto' }}>
+        <Button component={Link} href={`/books/${bookId}`} variant="outlined" startIcon={<ArrowBack />}
+          sx={{ mb: 3, textTransform: 'none', fontWeight: 600 }}>
+          Back to Book
         </Button>
-        
-        <Typography variant="h4" fontWeight={700} gutterBottom>
-          Write a Review
-        </Typography>
-        
+
         {book && (
-          <Card variant="outlined" sx={{ mb: 3 }}>
-            <CardContent>
-              <Typography variant="h6" gutterBottom>
-                {book.title}
-              </Typography>
-              <Typography variant="subtitle1" color="text.secondary" gutterBottom>
-                by {book.author}
-              </Typography>
-              <Box display="flex" gap={1}>
-                <Chip label={book.genre} size="small" variant="outlined" />
-                <Chip label={book.publishedYear} size="small" variant="outlined" />
+          <Card sx={{ mb: 3, border: '1px solid #e2e8f0', boxShadow: '0 1px 3px rgba(0,0,0,0.06)' }}>
+            <Box sx={{ p: 3, display: 'flex', alignItems: 'center', gap: 2 }}>
+              <Avatar sx={{ width: 56, height: 56, backgroundColor: '#3B82F6', fontSize: '1.125rem', fontWeight: 700 }}>
+                {book.title.substring(0, 2).toUpperCase()}
+              </Avatar>
+              <Box>
+                <Typography variant="h6" fontWeight={700} color="#2d3748">
+                  {book.title}
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  by {book.author}
+                </Typography>
               </Box>
-            </CardContent>
+            </Box>
           </Card>
         )}
-      </Box>
 
-      <Card>
-        <CardContent>
-          <Box component="form" onSubmit={handleSubmit(onSubmit)}>
+        <Card sx={{ border: '1px solid #e2e8f0', boxShadow: '0 1px 3px rgba(0,0,0,0.06)' }}>
+          <Box sx={{ p: { xs: 3, sm: 4 } }}>
+            <Typography variant="h5" fontWeight={700} color="#2d3748" sx={{ mb: 3, fontSize: { xs: '1.25rem', sm: '1.5rem' } }}>
+              Write Your Review
+            </Typography>
+
             {error && (
               <Alert severity="error" sx={{ mb: 3 }}>
                 {error}
               </Alert>
             )}
 
-            <Box mb={3}>
-              <Typography variant="h6" gutterBottom>
-                Rating *
-              </Typography>
-              <Rating
-                value={rating}
-                onChange={(_, newValue) => {
-                  setValue('rating', newValue || 0);
-                }}
-                size="large"
-                sx={{ mb: 1 }}
-              />
-              {errors.rating && (
-                <Typography variant="body2" color="error">
-                  {errors.rating.message}
+            <Box component="form" onSubmit={handleSubmit}>
+              <Box sx={{ mb: 3 }}>
+                <Typography variant="subtitle1" fontWeight={600} color="#2d3748" gutterBottom>
+                  Your Rating *
                 </Typography>
-              )}
-            </Box>
+                <Rating
+                  value={rating}
+                  onChange={(_, val) => setRating(val || 0)}
+                  size="large"
+                  sx={{ color: '#f59e0b', fontSize: { xs: '2rem', sm: '2.5rem' } }}
+                />
+              </Box>
 
-            <TextField
-              fullWidth
-              multiline
-              rows={6}
-              label="Your Review *"
-              placeholder="Share your thoughts about this book..."
-              {...register('comment')}
-              error={!!errors.comment}
-              helperText={errors.comment?.message || `${watch('comment')?.length || 0}/500 characters`}
-              sx={{ mb: 3 }}
-            />
+              <TextField
+                fullWidth
+                multiline
+                rows={6}
+                label="Your Review"
+                placeholder="Share your thoughts about this book..."
+                value={comment}
+                onChange={(e) => setComment(e.target.value)}
+                required
+                helperText={`${comment.length}/500 characters (minimum 10)`}
+                sx={{ mb: 4 }}
+              />
 
-            <Box display="flex" gap={2}>
-              <Button
-                type="submit"
-                variant="contained"
-                disabled={submitting}
-                sx={{ minWidth: 120 }}
-              >
-                {submitting ? <CircularProgress size={24} /> : 'Submit Review'}
-              </Button>
-              <Button
-                component={Link}
-                href={`/books/${bookId}`}
-                variant="outlined"
-                disabled={submitting}
-              >
-                Cancel
-              </Button>
+              <Box sx={{ display: 'flex', gap: 2, flexDirection: { xs: 'column', sm: 'row' } }}>
+                <Button
+                  type="submit"
+                  variant="contained"
+                  size="large"
+                  fullWidth
+                  disabled={submitting}
+                  startIcon={<Send />}
+                  sx={{
+                    textTransform: 'none',
+                    fontWeight: 600,
+                    py: 1.5,
+                    backgroundColor: '#3B82F6',
+                    '&:hover': { backgroundColor: '#2563EB' }
+                  }}
+                >
+                  {submitting ? 'Submitting...' : 'Submit Review'}
+                </Button>
+                <Button
+                  component={Link}
+                  href={`/books/${bookId}`}
+                  variant="outlined"
+                  size="large"
+                  fullWidth
+                  disabled={submitting}
+                  sx={{
+                    textTransform: 'none',
+                    fontWeight: 600,
+                    py: 1.5,
+                  }}
+                >
+                  Cancel
+                </Button>
+              </Box>
             </Box>
           </Box>
-        </CardContent>
-      </Card>
-    </Container>
+        </Card>
+      </Box>
+    </DashboardLayout>
   );
 }

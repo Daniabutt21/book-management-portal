@@ -1,31 +1,41 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import {
-  Container,
   Typography,
   Box,
   Card,
-  CardContent,
   Button,
-  Chip,
   CircularProgress,
   Alert,
   Divider,
-  Grid,
+  Avatar,
+  Rating,
+  Chip,
+  IconButton,
 } from '@mui/material';
+import {
+  ArrowBack,
+  Edit,
+  Delete,
+  RateReview,
+  Person,
+  CalendarMonth,
+  Tag,
+} from '@mui/icons-material';
 import Link from 'next/link';
 import { useAuth } from '@/hooks/useAuth';
+import DashboardLayout from '@/components/DashboardLayout';
+import { apiClient } from '@/lib/api';
 
 interface Book {
   id: string;
   title: string;
   author: string;
   isbn: string;
-  publishedYear: number;
-  genre: string;
-  description: string;
+  description: string | null;
+  publishedAt: string | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -44,168 +54,225 @@ interface Feedback {
 
 export default function BookDetailPage() {
   const params = useParams();
+  const router = useRouter();
   const bookId = params.id as string;
-  
   const [book, setBook] = useState<Book | null>(null);
   const [feedback, setFeedback] = useState<Feedback[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string>('');
-  const { isAuthenticated } = useAuth();
+  const [error, setError] = useState('');
+  const { user } = useAuth();
 
   useEffect(() => {
     if (bookId) {
-      fetchBookDetails();
-      fetchBookFeedback();
+      fetchData();
     }
   }, [bookId]);
 
-  const fetchBookDetails = async () => {
+  const fetchData = async () => {
     try {
-      const response = await fetch(`http://localhost:3001/books/${bookId}`);
-      if (!response.ok) {
-        throw new Error('Failed to fetch book details');
-      }
-      const data = await response.json();
-      setBook(data);
-    } catch (err: any) {
-      setError(err.message || 'Failed to load book details');
+      setLoading(true);
+      const [bookRes, feedbackRes] = await Promise.all([
+        apiClient.get(`/books/${bookId}`),
+        apiClient.get(`/feedback/book/${bookId}?isApproved=true`).catch(() => ({ data: { data: [] } }))
+      ]);
+      
+      setBook(bookRes.data);
+      setFeedback(feedbackRes.data.data || []);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to load book');
+    } finally {
+      setLoading(false);
     }
   };
 
-  const fetchBookFeedback = async () => {
+  const handleDelete = async () => {
+    if (!confirm('Are you sure you want to delete this book?')) return;
+    
     try {
-      const response = await fetch(`http://localhost:3001/feedback/book/${bookId}?isApproved=true`);
-      if (!response.ok) {
-        throw new Error('Failed to fetch feedback');
-      }
-      const data = await response.json();
-      setFeedback(data.data || []);
-    } catch (err: any) {
-      console.error('Failed to fetch feedback:', err);
+      await apiClient.delete(`/books/${bookId}`);
+      router.push('/books');
+    } catch (err) {
+      alert('Failed to delete book');
     }
   };
 
-  const getAverageRating = () => {
-    if (feedback.length === 0) return 0;
-    const sum = feedback.reduce((acc, f) => acc + f.rating, 0);
-    return (sum / feedback.length).toFixed(1);
+  const formatDate = (date: string | null) => {
+    if (!date) return 'Unknown';
+    return new Date(date).toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
   };
 
-  const getRatingStars = (rating: number) => {
-    return '★'.repeat(rating) + '☆'.repeat(5 - rating);
+  const avgRating = () => {
+    if (!feedback.length) return 0;
+    return feedback.reduce((sum, f) => sum + f.rating, 0) / feedback.length;
   };
 
   if (loading) {
     return (
-      <Container maxWidth="lg" sx={{ py: 4 }}>
-        <Box display="flex" justifyContent="center" alignItems="center" minHeight="400px">
+      <DashboardLayout>
+        <Box display="flex" flexDirection="column" justifyContent="center" alignItems="center" minHeight="60vh">
           <CircularProgress />
+          <Typography color="text.secondary" sx={{ mt: 2 }}>Loading book...</Typography>
         </Box>
-      </Container>
+      </DashboardLayout>
     );
   }
 
   if (error || !book) {
     return (
-      <Container maxWidth="lg" sx={{ py: 4 }}>
-        <Alert severity="error" sx={{ mb: 2 }}>
-          {error || 'Book not found'}
-        </Alert>
-        <Button component={Link} href="/books" variant="outlined">
-          Back to Books
-        </Button>
-      </Container>
+      <DashboardLayout>
+        <Box sx={{ p: { xs: 2, sm: 3, md: 4 } }}>
+          <Alert severity="error" sx={{ mb: 3 }}>{error || 'Book not found'}</Alert>
+          <Button component={Link} href="/books" variant="outlined" startIcon={<ArrowBack />}>
+            Back to Books
+          </Button>
+        </Box>
+      </DashboardLayout>
     );
   }
 
   return (
-    <Container maxWidth="lg" sx={{ py: 4 }}>
-      <Box mb={4}>
-        <Button component={Link} href="/books" variant="outlined" sx={{ mb: 2 }}>
-          ← Back to Books
+    <DashboardLayout>
+      <Box sx={{ p: { xs: 2, sm: 3, md: 4 }, maxWidth: 1200, mx: 'auto' }}>
+        <Button component={Link} href="/books" variant="outlined" startIcon={<ArrowBack />}
+          sx={{ mb: 3, textTransform: 'none', fontWeight: 600 }}>
+          Back to Books
         </Button>
-        
-        <Card>
-          <CardContent>
-            <Typography variant="h4" fontWeight={700} gutterBottom>
-              {book.title}
-            </Typography>
-            
-            <Typography variant="h6" color="text.secondary" gutterBottom>
-              by {book.author}
-            </Typography>
 
-            <Box display="flex" gap={2} mb={3}>
-              <Chip label={book.genre} variant="outlined" />
-              <Chip label={book.publishedYear} variant="outlined" />
-              <Chip label={`ISBN: ${book.isbn}`} variant="outlined" />
-            </Box>
-
-            <Typography variant="body1" paragraph>
-              {book.description}
-            </Typography>
-
-            <Divider sx={{ my: 3 }} />
-
-            <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
-              <Typography variant="h6">
-                Reviews ({feedback.length})
-              </Typography>
-              {feedback.length > 0 && (
-                <Typography variant="h6" color="primary">
-                  Average Rating: {getAverageRating()}/5
+        <Card sx={{ mb: 4, border: '1px solid #e2e8f0', boxShadow: '0 1px 3px rgba(0,0,0,0.06)' }}>
+          <Box sx={{ p: { xs: 3, sm: 4 } }}>
+            <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, justifyContent: 'space-between', alignItems: { xs: 'flex-start', sm: 'flex-start' }, mb: 3, gap: 2 }}>
+              <Box sx={{ flex: 1 }}>
+                <Typography variant="h4" fontWeight={700} color="#2d3748" 
+                  sx={{ mb: 1, fontSize: { xs: '1.25rem', sm: '1.5rem', md: '2rem' } }}>
+                  {book.title}
                 </Typography>
-              )}
-              {isAuthenticated && (
-                <Button 
-                  component={Link} 
-                  href={`/books/${book.id}/feedback`} 
-                  variant="contained"
-                >
-                  Add Review
-                </Button>
+                <Typography variant="h6" color="text.secondary" sx={{ mb: 2, fontSize: { xs: '0.95rem', sm: '1rem', md: '1.125rem' } }}>
+                  by {book.author}
+                </Typography>
+                {feedback.length > 0 && (
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, flexWrap: 'wrap' }}>
+                    <Rating value={avgRating()} precision={0.5} readOnly size="small" sx={{ color: '#f59e0b' }} />
+                    <Typography variant="body2" color="text.secondary" sx={{ fontSize: { xs: '0.875rem', sm: '0.95rem' } }}>
+                      {avgRating().toFixed(1)} ({feedback.length} review{feedback.length !== 1 ? 's' : ''})
+                    </Typography>
+                  </Box>
+                )}
+              </Box>
+              {user?.role?.name === 'ADMIN' && (
+                <Box sx={{ display: 'flex', gap: 1, flexShrink: 0 }}>
+                  <Button component={Link} href={`/books/${bookId}/edit`} variant="outlined" size="small" startIcon={<Edit />}
+                    sx={{ 
+                      textTransform: 'none', 
+                      fontWeight: 600,
+                      fontSize: { xs: '0.8rem', sm: '0.875rem' },
+                      px: { xs: 1.5, sm: 2 },
+                      borderColor: '#3B82F6',
+                      color: '#3B82F6',
+                      '&:hover': { borderColor: '#2563EB', backgroundColor: 'rgba(59, 130, 246, 0.04)' }
+                    }}>
+                    Edit
+                  </Button>
+                  <Button variant="outlined" size="small" startIcon={<Delete />} onClick={handleDelete}
+                    sx={{ 
+                      textTransform: 'none', 
+                      fontWeight: 600,
+                      fontSize: { xs: '0.8rem', sm: '0.875rem' },
+                      px: { xs: 1.5, sm: 2 },
+                      borderColor: '#ef4444',
+                      color: '#ef4444',
+                      '&:hover': { borderColor: '#dc2626', backgroundColor: 'rgba(239, 68, 68, 0.04)' }
+                    }}>
+                    Delete
+                  </Button>
+                </Box>
               )}
             </Box>
 
-            {feedback.length === 0 ? (
-              <Box textAlign="center" py={4}>
-                <Typography variant="body1" color="text.secondary">
-                  No reviews yet. Be the first to review this book!
+            <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, gap: { xs: 1.5, sm: 2 }, mb: 3, flexWrap: 'wrap' }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <CalendarMonth sx={{ fontSize: { xs: 18, sm: 20 }, color: '#3B82F6' }} />
+                <Typography variant="body2" color="#4a5568" sx={{ fontSize: { xs: '0.875rem', sm: '0.95rem' } }}>
+                  {formatDate(book.publishedAt)}
                 </Typography>
               </Box>
-            ) : (
-              <Grid container spacing={2}>
-                {feedback.map((review) => (
-                  <Grid item xs={12} key={review.id}>
-                    <Card variant="outlined">
-                      <CardContent>
-                        <Box display="flex" justifyContent="space-between" alignItems="flex-start" mb={1}>
-                          <Typography variant="subtitle1" fontWeight={600}>
-                            {review.user.name}
-                          </Typography>
-                          <Typography variant="body2" color="text.secondary">
-                            {new Date(review.createdAt).toLocaleDateString()}
-                          </Typography>
-                        </Box>
-                        
-                        <Box mb={1}>
-                          <Typography variant="h6" color="primary">
-                            {getRatingStars(review.rating)}
-                          </Typography>
-                        </Box>
-                        
-                        <Typography variant="body2">
-                          {review.comment}
-                        </Typography>
-                      </CardContent>
-                    </Card>
-                  </Grid>
-                ))}
-              </Grid>
-            )}
-          </CardContent>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <Tag sx={{ fontSize: { xs: 18, sm: 20 }, color: '#3B82F6' }} />
+                <Typography variant="body2" color="#4a5568" sx={{ fontFamily: 'monospace', fontSize: { xs: '0.75rem', sm: '0.875rem' } }}>
+                  ISBN: {book.isbn}
+                </Typography>
+              </Box>
+            </Box>
+
+            <Divider sx={{ my: { xs: 2, sm: 3 } }} />
+
+            <Typography variant="body1" color="#4a5568" sx={{ lineHeight: 1.8, fontSize: { xs: '0.875rem', sm: '0.95rem', md: '1rem' } }}>
+              {book.description || 'No description available for this book.'}
+            </Typography>
+          </Box>
         </Card>
+
+        <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, justifyContent: 'space-between', alignItems: { xs: 'stretch', sm: 'center' }, mb: 3, gap: 2 }}>
+          <Typography variant="h5" fontWeight={700} color="#2d3748" 
+            sx={{ fontSize: { xs: '1.125rem', sm: '1.25rem', md: '1.5rem' } }}>
+            Reviews
+          </Typography>
+          <Button component={Link} href={`/books/${bookId}/feedback`} variant="contained" 
+            startIcon={<RateReview sx={{ fontSize: { xs: 18, sm: 20 } }} />}
+            sx={{ 
+              textTransform: 'none', 
+              fontWeight: 600,
+              fontSize: { xs: '0.875rem', sm: '0.95rem' },
+              py: { xs: 1, sm: 1.25 },
+              backgroundColor: '#3B82F6',
+              '&:hover': { backgroundColor: '#2563EB' }
+            }}>
+            Add Review
+          </Button>
+        </Box>
+
+        {feedback.length === 0 ? (
+          <Card sx={{ textAlign: 'center', py: 6, border: '1px solid #e2e8f0', boxShadow: 'none' }}>
+            <Typography variant="h6" color="text.secondary" gutterBottom>
+              No reviews yet
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              Be the first to share your thoughts about this book
+            </Typography>
+          </Card>
+        ) : (
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: { xs: 2, sm: 2.5 } }}>
+            {feedback.map(review => (
+              <Card key={review.id} sx={{ border: '1px solid #e2e8f0', boxShadow: '0 1px 3px rgba(0,0,0,0.06)' }}>
+                <Box sx={{ p: { xs: 2.5, sm: 3 } }}>
+                  <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, justifyContent: 'space-between', alignItems: { xs: 'flex-start', sm: 'flex-start' }, mb: 2, gap: { xs: 1.5, sm: 2 } }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                      <Avatar sx={{ width: { xs: 36, sm: 40 }, height: { xs: 36, sm: 40 }, backgroundColor: '#3B82F6', fontSize: { xs: '0.875rem', sm: '0.95rem' } }}>
+                        {review.user.name.charAt(0).toUpperCase()}
+                      </Avatar>
+                      <Box>
+                        <Typography variant="subtitle1" fontWeight={600} color="#2d3748" sx={{ fontSize: { xs: '0.95rem', sm: '1rem' } }}>
+                          {review.user.name}
+                        </Typography>
+                        <Typography variant="caption" color="text.secondary" sx={{ fontSize: { xs: '0.7rem', sm: '0.75rem' } }}>
+                          {new Date(review.createdAt).toLocaleDateString('en-US', { 
+                            month: 'long', 
+                            day: 'numeric', 
+                            year: 'numeric' 
+                          })}
+                        </Typography>
+                      </Box>
+                    </Box>
+                    <Rating value={review.rating} readOnly size="small" sx={{ color: '#f59e0b' }} />
+                  </Box>
+                  <Typography variant="body2" color="#4a5568" sx={{ lineHeight: 1.7, fontSize: { xs: '0.875rem', sm: '0.95rem' } }}>
+                    {review.comment}
+                  </Typography>
+                </Box>
+              </Card>
+            ))}
+          </Box>
+        )}
       </Box>
-    </Container>
+    </DashboardLayout>
   );
 }

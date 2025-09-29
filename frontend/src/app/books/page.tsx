@@ -23,6 +23,7 @@ import {
 import Link from 'next/link';
 import { useAuth } from '@/hooks/useAuth';
 import DashboardLayout from '@/components/DashboardLayout';
+import { apiClient } from '@/lib/api';
 
 interface Book {
   id: string;
@@ -50,10 +51,8 @@ export default function BooksPage() {
   const fetchBooks = async () => {
     try {
       setLoading(true);
-      const res = await fetch('http://localhost:3001/books');
-      if (!res.ok) throw new Error('Failed to fetch books');
-      const data = await res.json();
-      setBooks(data.data || []);
+      const res = await apiClient.get('/books');
+      setBooks(res.data.data || []);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Error loading books');
     } finally {
@@ -101,24 +100,28 @@ export default function BooksPage() {
   return (
     <DashboardLayout>
       <Box sx={{ minHeight: 'calc(100vh - 64px)', p: { xs: 2, sm: 3, md: 4 } }}>
-        <Box sx={{ mb: { xs: 3, sm: 4 } }}>
-          <Typography variant="h4" fontWeight={700} color="#1a202c" 
-            sx={{ mb: 1, fontSize: { xs: '1.25rem', sm: '1.5rem', md: '2rem' } }}>
-            Discover Books
-          </Typography>
-          <Typography color="text.secondary" sx={{ mb: { xs: 2, sm: 3 }, fontSize: { xs: '0.875rem', sm: '1rem' } }}>
-            Browse {books.length} book{books.length !== 1 ? 's' : ''} in our collection
-          </Typography>
+        <Box sx={{ mb: { xs: 3, sm: 4 }, display: 'flex', justifyContent: 'space-between', alignItems: { xs: 'flex-start', sm: 'center' }, flexDirection: { xs: 'column', sm: 'row' }, gap: 2 }}>
+          <Box>
+            <Typography variant="h4" fontWeight={700} color="#1a202c" 
+              sx={{ mb: 1, fontSize: { xs: '1.25rem', sm: '1.5rem', md: '2rem' } }}>
+              Discover Books
+            </Typography>
+            <Typography color="text.secondary" sx={{ fontSize: { xs: '0.875rem', sm: '1rem' } }}>
+              Browse {books.length} book{books.length !== 1 ? 's' : ''} in our collection
+            </Typography>
+          </Box>
           
-          {user?.role?.name === 'Admin' && (
+          {user?.role?.name === 'ADMIN' && (
             <Button component={Link} href="/books/new" variant="contained" startIcon={<Add />}
               sx={{ 
                 textTransform: 'none', 
                 fontWeight: 600, 
-                px: { xs: 2, sm: 3 }, 
+                px: { xs: 2, sm: 3 },
+                py: { xs: 1, sm: 1.25 },
                 width: { xs: '100%', sm: 'auto' },
                 backgroundColor: '#3B82F6',
-                '&:hover': { backgroundColor: '#2563EB' }
+                boxShadow: 'none',
+                '&:hover': { backgroundColor: '#2563EB', boxShadow: '0 2px 8px rgba(59, 130, 246, 0.3)' }
               }}>
               Add New Book
             </Button>
