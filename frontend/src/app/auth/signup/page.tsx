@@ -15,9 +15,7 @@ import {
   AppBar,
   Toolbar,
 } from '@mui/material';
-import {
-  Book as BookIcon,
-} from '@mui/icons-material';
+import { Book as BookIcon } from '@mui/icons-material';
 import Link from 'next/link';
 import { useAuth } from '@/hooks/useAuth';
 
@@ -60,55 +58,74 @@ export default function SignupPage() {
 
   return (
     <Box sx={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
-      <AppBar 
-        position="static" 
-        sx={{ 
+      <AppBar
+        position="static"
+        sx={{
           backgroundColor: 'primary.main',
           boxShadow: 'none',
           borderRadius: 0,
         }}
       >
         <Toolbar sx={{ justifyContent: 'space-between', px: { xs: 1, sm: 2 } }}>
-          <Link href="/" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center' }}>
+          <Link
+            href="/"
+            style={{
+              textDecoration: 'none',
+              display: 'flex',
+              alignItems: 'center',
+            }}
+          >
             <Box display="flex" alignItems="center">
-              <BookIcon sx={{ color: 'secondary.main', mr: { xs: 0.5, sm: 1 }, fontSize: { xs: 24, sm: 28 } }} />
-              <Typography 
-                variant="h6" 
-                fontWeight={700} 
+              <BookIcon
+                sx={{
+                  color: 'secondary.main',
+                  mr: { xs: 0.5, sm: 1 },
+                  fontSize: { xs: 24, sm: 28 },
+                }}
+              />
+              <Typography
+                variant="h6"
+                fontWeight={700}
                 color="white"
-                sx={{ fontSize: { xs: '0.95rem', sm: '1.1rem', md: '1.25rem' } }}
+                sx={{
+                  fontSize: { xs: '0.95rem', sm: '1.1rem', md: '1.25rem' },
+                }}
               >
                 Book Management Portal
               </Typography>
             </Box>
           </Link>
 
-          <Box display="flex" alignItems="center" gap={{ xs: 1.5, sm: 2, md: 3 }}>
+          <Box
+            display="flex"
+            alignItems="center"
+            gap={{ xs: 1.5, sm: 2, md: 3 }}
+          >
             <Link href="/#home" style={{ textDecoration: 'none' }}>
-              <Typography 
-                color="white" 
-                sx={{ 
+              <Typography
+                color="white"
+                sx={{
                   '&:hover': { opacity: 0.8 },
-                  display: { xs: 'none', md: 'block' }
+                  display: { xs: 'none', md: 'block' },
                 }}
               >
                 Home
               </Typography>
             </Link>
             <Link href="/#features" style={{ textDecoration: 'none' }}>
-              <Typography 
-                color="white" 
-                sx={{ 
+              <Typography
+                color="white"
+                sx={{
                   '&:hover': { opacity: 0.8 },
-                  display: { xs: 'none', md: 'block' }
+                  display: { xs: 'none', md: 'block' },
                 }}
               >
                 Features
               </Typography>
             </Link>
-            <Button 
-              component={Link} 
-              href="/auth/login" 
+            <Button
+              component={Link}
+              href="/auth/login"
               variant="outlined"
               sx={{
                 borderColor: 'white',
@@ -124,9 +141,9 @@ export default function SignupPage() {
             >
               Login
             </Button>
-            <Button 
-              component={Link} 
-              href="/auth/signup" 
+            <Button
+              component={Link}
+              href="/auth/signup"
               variant="contained"
               sx={{
                 backgroundColor: 'secondary.main',
@@ -156,16 +173,21 @@ export default function SignupPage() {
               alignItems: 'center',
             }}
           >
-            <Paper elevation={3} sx={{ padding: { xs: 3, sm: 4 }, width: '100%' }}>
-              <Typography component="h1" variant="h4" align="center" gutterBottom>
+            <Paper
+              elevation={3}
+              sx={{ padding: { xs: 3, sm: 4 }, width: '100%' }}
+            >
+              <Typography
+                component="h1"
+                variant="h4"
+                align="center"
+                gutterBottom
+              >
                 Sign Up
               </Typography>
 
               {error && (
-                <Alert 
-                  severity="error" 
-                  sx={{ mb: 2 }}
-                >
+                <Alert severity="error" sx={{ mb: 2 }}>
                   {error}
                 </Alert>
               )}
@@ -262,56 +284,72 @@ export default function SignupPage() {
         }}
       >
         <Container maxWidth="md">
-          <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '5fr 3fr 3fr' }, gap: { xs: 2, sm: 3 } }}>
+          <Box
+            sx={{
+              display: 'grid',
+              gridTemplateColumns: { xs: '1fr', md: '5fr 3fr 3fr' },
+              gap: { xs: 2, sm: 3 },
+            }}
+          >
             <Box>
               <Box display="flex" alignItems="center" mb={1.5}>
-                <BookIcon sx={{ color: 'secondary.main', mr: 1, fontSize: 24 }} />
+                <BookIcon
+                  sx={{ color: 'secondary.main', mr: 1, fontSize: 24 }}
+                />
                 <Typography variant="h6" fontWeight={600} fontSize="1rem">
                   Book Management Portal
                 </Typography>
               </Box>
-              <Typography variant="body2" sx={{ opacity: 0.85, lineHeight: 1.6, fontSize: '0.875rem' }}>
+              <Typography
+                variant="body2"
+                sx={{ opacity: 0.85, lineHeight: 1.6, fontSize: '0.875rem' }}
+              >
                 Browse, review, and manage your book collection with ease.
               </Typography>
             </Box>
 
             <Box>
-              <Typography variant="subtitle2" fontWeight={600} gutterBottom sx={{ mb: 1.5 }}>
+              <Typography
+                variant="subtitle2"
+                fontWeight={600}
+                gutterBottom
+                sx={{ mb: 1.5 }}
+              >
                 Resources
               </Typography>
               <Box display="flex" flexDirection="column" gap={0.8}>
-                <Typography 
-                  variant="body2" 
-                  sx={{ 
-                    color: 'white', 
+                <Typography
+                  variant="body2"
+                  sx={{
+                    color: 'white',
                     opacity: 0.85,
                     fontSize: '0.875rem',
                     cursor: 'pointer',
-                    '&:hover': { opacity: 1 } 
+                    '&:hover': { opacity: 1 },
                   }}
                 >
                   Documentation
                 </Typography>
-                <Typography 
-                  variant="body2" 
-                  sx={{ 
-                    color: 'white', 
+                <Typography
+                  variant="body2"
+                  sx={{
+                    color: 'white',
                     opacity: 0.85,
                     fontSize: '0.875rem',
                     cursor: 'pointer',
-                    '&:hover': { opacity: 1 } 
+                    '&:hover': { opacity: 1 },
                   }}
                 >
                   Help Center
                 </Typography>
-                <Typography 
-                  variant="body2" 
-                  sx={{ 
-                    color: 'white', 
+                <Typography
+                  variant="body2"
+                  sx={{
+                    color: 'white',
                     opacity: 0.85,
                     fontSize: '0.875rem',
                     cursor: 'pointer',
-                    '&:hover': { opacity: 1 } 
+                    '&:hover': { opacity: 1 },
                   }}
                 >
                   Privacy Policy
@@ -320,42 +358,47 @@ export default function SignupPage() {
             </Box>
 
             <Box>
-              <Typography variant="subtitle2" fontWeight={600} gutterBottom sx={{ mb: 1.5 }}>
+              <Typography
+                variant="subtitle2"
+                fontWeight={600}
+                gutterBottom
+                sx={{ mb: 1.5 }}
+              >
                 Company
               </Typography>
               <Box display="flex" flexDirection="column" gap={0.8}>
-                <Typography 
-                  variant="body2" 
-                  sx={{ 
-                    color: 'white', 
+                <Typography
+                  variant="body2"
+                  sx={{
+                    color: 'white',
                     opacity: 0.85,
                     fontSize: '0.875rem',
                     cursor: 'pointer',
-                    '&:hover': { opacity: 1 } 
+                    '&:hover': { opacity: 1 },
                   }}
                 >
                   About Us
                 </Typography>
-                <Typography 
-                  variant="body2" 
-                  sx={{ 
-                    color: 'white', 
+                <Typography
+                  variant="body2"
+                  sx={{
+                    color: 'white',
                     opacity: 0.85,
                     fontSize: '0.875rem',
                     cursor: 'pointer',
-                    '&:hover': { opacity: 1 } 
+                    '&:hover': { opacity: 1 },
                   }}
                 >
                   Contact
                 </Typography>
-                <Typography 
-                  variant="body2" 
-                  sx={{ 
-                    color: 'white', 
+                <Typography
+                  variant="body2"
+                  sx={{
+                    color: 'white',
                     opacity: 0.85,
                     fontSize: '0.875rem',
                     cursor: 'pointer',
-                    '&:hover': { opacity: 1 } 
+                    '&:hover': { opacity: 1 },
                   }}
                 >
                   Terms of Service
@@ -364,16 +407,20 @@ export default function SignupPage() {
             </Box>
           </Box>
 
-          <Box 
-            sx={{ 
-              borderTop: '1px solid rgba(255, 255, 255, 0.1)', 
-              mt: 3, 
+          <Box
+            sx={{
+              borderTop: '1px solid rgba(255, 255, 255, 0.1)',
+              mt: 3,
               pt: 2.5,
-              textAlign: 'center'
+              textAlign: 'center',
             }}
           >
-            <Typography variant="body2" sx={{ opacity: 0.8, fontSize: '0.813rem' }}>
-              © {new Date().getFullYear()} Book Management Portal. All rights reserved.
+            <Typography
+              variant="body2"
+              sx={{ opacity: 0.8, fontSize: '0.813rem' }}
+            >
+              © {new Date().getFullYear()} Book Management Portal. All rights
+              reserved.
             </Typography>
           </Box>
         </Container>

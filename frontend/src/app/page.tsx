@@ -4,10 +4,10 @@ import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import {
   Container,
-  Typography, 
-  Box, 
-  Button, 
-  Card, 
+  Typography,
+  Box,
+  Button,
+  Card,
   CardContent,
   AppBar,
   Toolbar,
@@ -30,7 +30,9 @@ import { useState } from 'react';
 export default function Home() {
   const { isAuthenticated, isLoading } = useAuth();
   const router = useRouter();
-  const [mobileMenuAnchor, setMobileMenuAnchor] = useState<null | HTMLElement>(null);
+  const [mobileMenuAnchor, setMobileMenuAnchor] = useState<null | HTMLElement>(
+    null
+  );
 
   useEffect(() => {
     if (!isLoading && isAuthenticated) {
@@ -48,14 +50,18 @@ export default function Home() {
 
   if (isLoading) {
     return (
-      <Box sx={{ 
-        minHeight: '100vh', 
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        backgroundColor: '#ffffff',
-      }}>
-        <Typography variant="h6" color="text.secondary">Loading...</Typography>
+      <Box
+        sx={{
+          minHeight: '100vh',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          backgroundColor: '#ffffff',
+        }}
+      >
+        <Typography variant="h6" color="text.secondary">
+          Loading...
+        </Typography>
       </Box>
     );
   }
@@ -66,9 +72,9 @@ export default function Home() {
 
   return (
     <Box sx={{ minHeight: '100vh' }}>
-      <AppBar 
-        position="static" 
-        sx={{ 
+      <AppBar
+        position="static"
+        sx={{
           backgroundColor: 'primary.main',
           boxShadow: 'none',
           borderRadius: 0,
@@ -76,10 +82,16 @@ export default function Home() {
       >
         <Toolbar sx={{ justifyContent: 'space-between', px: { xs: 1, sm: 2 } }}>
           <Box display="flex" alignItems="center">
-            <BookIcon sx={{ color: 'secondary.main', mr: { xs: 0.5, sm: 1 }, fontSize: { xs: 24, sm: 28 } }} />
-            <Typography 
-              variant="h6" 
-              fontWeight={700} 
+            <BookIcon
+              sx={{
+                color: 'secondary.main',
+                mr: { xs: 0.5, sm: 1 },
+                fontSize: { xs: 24, sm: 28 },
+              }}
+            />
+            <Typography
+              variant="h6"
+              fontWeight={700}
               color="white"
               sx={{ fontSize: { xs: '0.95rem', sm: '1.1rem', md: '1.25rem' } }}
             >
@@ -87,32 +99,36 @@ export default function Home() {
             </Typography>
           </Box>
 
-          <Box display="flex" alignItems="center" gap={{ xs: 1.5, sm: 2, md: 3 }}>
+          <Box
+            display="flex"
+            alignItems="center"
+            gap={{ xs: 1.5, sm: 2, md: 3 }}
+          >
             <Link href="#home" style={{ textDecoration: 'none' }}>
-              <Typography 
-                color="white" 
-                sx={{ 
+              <Typography
+                color="white"
+                sx={{
                   '&:hover': { opacity: 0.8 },
-                  display: { xs: 'none', md: 'block' }
+                  display: { xs: 'none', md: 'block' },
                 }}
               >
                 Home
               </Typography>
             </Link>
             <Link href="#features" style={{ textDecoration: 'none' }}>
-              <Typography 
-                color="white" 
-                sx={{ 
+              <Typography
+                color="white"
+                sx={{
                   '&:hover': { opacity: 0.8 },
-                  display: { xs: 'none', md: 'block' }
+                  display: { xs: 'none', md: 'block' },
                 }}
               >
                 Features
               </Typography>
             </Link>
-            <Button 
-              component={Link} 
-              href="/auth/login" 
+            <Button
+              component={Link}
+              href="/auth/login"
               variant="outlined"
               sx={{
                 borderColor: 'white',
@@ -128,9 +144,9 @@ export default function Home() {
             >
               Login
             </Button>
-            <Button 
-              component={Link} 
-              href="/auth/signup" 
+            <Button
+              component={Link}
+              href="/auth/signup"
               variant="contained"
               sx={{
                 backgroundColor: 'secondary.main',
@@ -145,7 +161,7 @@ export default function Home() {
             >
               Sign Up
             </Button>
-            
+
             <IconButton
               color="inherit"
               aria-label="menu"
@@ -164,12 +180,18 @@ export default function Home() {
           sx={{ display: { xs: 'block', md: 'none' } }}
         >
           <MenuItem onClick={handleMobileMenuClose}>
-            <Link href="#home" style={{ textDecoration: 'none', color: 'inherit' }}>
+            <Link
+              href="#home"
+              style={{ textDecoration: 'none', color: 'inherit' }}
+            >
               Home
             </Link>
           </MenuItem>
           <MenuItem onClick={handleMobileMenuClose}>
-            <Link href="#features" style={{ textDecoration: 'none', color: 'inherit' }}>
+            <Link
+              href="#features"
+              style={{ textDecoration: 'none', color: 'inherit' }}
+            >
               Features
             </Link>
           </MenuItem>
@@ -187,32 +209,39 @@ export default function Home() {
         }}
       >
         <Container maxWidth="lg">
-          <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr' }, alignItems: 'center' }}>
+          <Box
+            sx={{
+              display: 'grid',
+              gridTemplateColumns: { xs: '1fr', md: '1fr' },
+              alignItems: 'center',
+            }}
+          >
             <Box>
-              <Typography 
-                variant="h2" 
-                fontWeight={700} 
-                color="white" 
+              <Typography
+                variant="h2"
+                fontWeight={700}
+                color="white"
                 gutterBottom
-                sx={{ 
+                sx={{
                   fontSize: { xs: '1.75rem', sm: '2rem', md: '2.5rem' },
-                  mb: 2
+                  mb: 2,
                 }}
               >
                 Manage Your Books Smarter
               </Typography>
-              <Typography 
-                variant="h6" 
-                color="white" 
-                sx={{ 
-                  mb: { xs: 2, md: 3 }, 
+              <Typography
+                variant="h6"
+                color="white"
+                sx={{
+                  mb: { xs: 2, md: 3 },
                   opacity: 0.9,
                   fontWeight: 400,
                   fontSize: { xs: '0.95rem', sm: '1.05rem', md: '1.2rem' },
-                  lineHeight: 1.4
+                  lineHeight: 1.4,
                 }}
               >
-                Browse books, leave reviews, and manage your library with powerful admin tools.
+                Browse books, leave reviews, and manage your library with
+                powerful admin tools.
               </Typography>
               <Button
                 component={Link}
@@ -235,7 +264,6 @@ export default function Home() {
                 Get Started
               </Button>
             </Box>
-
           </Box>
         </Container>
       </Box>
@@ -248,42 +276,54 @@ export default function Home() {
         }}
       >
         <Container maxWidth="lg">
-          <Typography 
-            variant="h3" 
-            fontWeight={700} 
-            color="text.primary" 
-            textAlign="center" 
+          <Typography
+            variant="h3"
+            fontWeight={700}
+            color="text.primary"
+            textAlign="center"
             gutterBottom
-            sx={{ 
+            sx={{
               mb: { xs: 3, sm: 4, md: 6 },
-              fontSize: { xs: '1.75rem', sm: '2rem', md: '2.5rem' }
+              fontSize: { xs: '1.75rem', sm: '2rem', md: '2.5rem' },
             }}
           >
             Features
           </Typography>
-          
-          <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)' }, gap: { xs: 2, sm: 3, md: 4 }, justifyContent: 'center' }}>
+
+          <Box
+            sx={{
+              display: 'grid',
+              gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)' },
+              gap: { xs: 2, sm: 3, md: 4 },
+              justifyContent: 'center',
+            }}
+          >
             <Box sx={{ display: 'flex' }}>
-              <Card sx={{ 
-                width: '100%',
-                textAlign: 'center',
-                border: '1px solid',
-                borderColor: 'grey.200',
-                borderRadius: 2,
-                '&:hover': {
-                  boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1)',
-                },
-                transition: 'all 0.2s ease-in-out',
-                display: 'flex',
-                flexDirection: 'column',
-              }}>
-                <CardContent sx={{ 
-                  flex: 1,
-                  display: 'flex', 
+              <Card
+                sx={{
+                  width: '100%',
+                  textAlign: 'center',
+                  border: '1px solid',
+                  borderColor: 'grey.200',
+                  borderRadius: 2,
+                  '&:hover': {
+                    boxShadow:
+                      '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1)',
+                  },
+                  transition: 'all 0.2s ease-in-out',
+                  display: 'flex',
                   flexDirection: 'column',
-                  p: 3,
-                  '&:last-child': { pb: 3 }
-                }}>
+                }}
+              >
+                <CardContent
+                  sx={{
+                    flex: 1,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    p: 3,
+                    '&:last-child': { pb: 3 },
+                  }}
+                >
                   <Box
                     sx={{
                       width: 60,
@@ -299,7 +339,12 @@ export default function Home() {
                   >
                     <SearchIcon sx={{ color: 'white', fontSize: 30 }} />
                   </Box>
-                  <Typography variant="h5" fontWeight={600} color="text.primary" gutterBottom>
+                  <Typography
+                    variant="h5"
+                    fontWeight={600}
+                    color="text.primary"
+                    gutterBottom
+                  >
                     Browse Books
                   </Typography>
                   <Typography variant="body1" color="text.secondary">
@@ -310,26 +355,31 @@ export default function Home() {
             </Box>
 
             <Box sx={{ display: 'flex' }}>
-              <Card sx={{ 
-                width: '100%',
-                textAlign: 'center',
-                border: '1px solid',
-                borderColor: 'grey.200',
-                borderRadius: 2,
-                '&:hover': {
-                  boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1)',
-                },
-                transition: 'all 0.2s ease-in-out',
-                display: 'flex',
-                flexDirection: 'column',
-              }}>
-                <CardContent sx={{ 
-                  flex: 1,
-                  display: 'flex', 
+              <Card
+                sx={{
+                  width: '100%',
+                  textAlign: 'center',
+                  border: '1px solid',
+                  borderColor: 'grey.200',
+                  borderRadius: 2,
+                  '&:hover': {
+                    boxShadow:
+                      '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1)',
+                  },
+                  transition: 'all 0.2s ease-in-out',
+                  display: 'flex',
                   flexDirection: 'column',
-                  p: 3,
-                  '&:last-child': { pb: 3 }
-                }}>
+                }}
+              >
+                <CardContent
+                  sx={{
+                    flex: 1,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    p: 3,
+                    '&:last-child': { pb: 3 },
+                  }}
+                >
                   <Box
                     sx={{
                       width: 60,
@@ -345,7 +395,12 @@ export default function Home() {
                   >
                     <RateReviewIcon sx={{ color: 'white', fontSize: 30 }} />
                   </Box>
-                  <Typography variant="h5" fontWeight={600} color="text.primary" gutterBottom>
+                  <Typography
+                    variant="h5"
+                    fontWeight={600}
+                    color="text.primary"
+                    gutterBottom
+                  >
                     Leave Feedback
                   </Typography>
                   <Typography variant="body1" color="text.secondary">
@@ -356,26 +411,31 @@ export default function Home() {
             </Box>
 
             <Box sx={{ display: 'flex' }}>
-              <Card sx={{ 
-                width: '100%',
-                textAlign: 'center',
-                border: '1px solid',
-                borderColor: 'grey.200',
-                borderRadius: 2,
-                '&:hover': {
-                  boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1)',
-                },
-                transition: 'all 0.2s ease-in-out',
-                display: 'flex',
-                flexDirection: 'column',
-              }}>
-                <CardContent sx={{ 
-                  flex: 1,
-                  display: 'flex', 
+              <Card
+                sx={{
+                  width: '100%',
+                  textAlign: 'center',
+                  border: '1px solid',
+                  borderColor: 'grey.200',
+                  borderRadius: 2,
+                  '&:hover': {
+                    boxShadow:
+                      '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1)',
+                  },
+                  transition: 'all 0.2s ease-in-out',
+                  display: 'flex',
                   flexDirection: 'column',
-                  p: 3,
-                  '&:last-child': { pb: 3 }
-                }}>
+                }}
+              >
+                <CardContent
+                  sx={{
+                    flex: 1,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    p: 3,
+                    '&:last-child': { pb: 3 },
+                  }}
+                >
                   <Box
                     sx={{
                       width: 60,
@@ -391,7 +451,12 @@ export default function Home() {
                   >
                     <AdminIcon sx={{ color: 'white', fontSize: 30 }} />
                   </Box>
-                  <Typography variant="h5" fontWeight={600} color="text.primary" gutterBottom>
+                  <Typography
+                    variant="h5"
+                    fontWeight={600}
+                    color="text.primary"
+                    gutterBottom
+                  >
                     Admin Dashboard
                   </Typography>
                   <Typography variant="body1" color="text.secondary">
@@ -402,26 +467,31 @@ export default function Home() {
             </Box>
 
             <Box sx={{ display: 'flex' }}>
-              <Card sx={{ 
-                width: '100%',
-                textAlign: 'center',
-                border: '1px solid',
-                borderColor: 'grey.200',
-                borderRadius: 2,
-                '&:hover': {
-                  boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1)',
-                },
-                transition: 'all 0.2s ease-in-out',
-                display: 'flex',
-                flexDirection: 'column',
-              }}>
-                <CardContent sx={{ 
-                  flex: 1,
-                  display: 'flex', 
+              <Card
+                sx={{
+                  width: '100%',
+                  textAlign: 'center',
+                  border: '1px solid',
+                  borderColor: 'grey.200',
+                  borderRadius: 2,
+                  '&:hover': {
+                    boxShadow:
+                      '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1)',
+                  },
+                  transition: 'all 0.2s ease-in-out',
+                  display: 'flex',
                   flexDirection: 'column',
-                  p: 3,
-                  '&:last-child': { pb: 3 }
-                }}>
+                }}
+              >
+                <CardContent
+                  sx={{
+                    flex: 1,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    p: 3,
+                    '&:last-child': { pb: 3 },
+                  }}
+                >
                   <Box
                     sx={{
                       width: 60,
@@ -437,7 +507,12 @@ export default function Home() {
                   >
                     <BookIcon sx={{ color: 'white', fontSize: 30 }} />
                   </Box>
-                  <Typography variant="h5" fontWeight={600} color="text.primary" gutterBottom>
+                  <Typography
+                    variant="h5"
+                    fontWeight={600}
+                    color="text.primary"
+                    gutterBottom
+                  >
                     Feedback Moderation
                   </Typography>
                   <Typography variant="body1" color="text.secondary">
@@ -460,56 +535,72 @@ export default function Home() {
         }}
       >
         <Container maxWidth="md">
-          <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '5fr 3fr 3fr' }, gap: { xs: 2, sm: 3 } }}>
+          <Box
+            sx={{
+              display: 'grid',
+              gridTemplateColumns: { xs: '1fr', md: '5fr 3fr 3fr' },
+              gap: { xs: 2, sm: 3 },
+            }}
+          >
             <Box>
               <Box display="flex" alignItems="center" mb={1.5}>
-                <BookIcon sx={{ color: 'secondary.main', mr: 1, fontSize: 24 }} />
+                <BookIcon
+                  sx={{ color: 'secondary.main', mr: 1, fontSize: 24 }}
+                />
                 <Typography variant="h6" fontWeight={600} fontSize="1rem">
                   Book Management Portal
                 </Typography>
               </Box>
-              <Typography variant="body2" sx={{ opacity: 0.85, lineHeight: 1.6, fontSize: '0.875rem' }}>
+              <Typography
+                variant="body2"
+                sx={{ opacity: 0.85, lineHeight: 1.6, fontSize: '0.875rem' }}
+              >
                 Browse, review, and manage your book collection with ease.
               </Typography>
             </Box>
 
             <Box>
-              <Typography variant="subtitle2" fontWeight={600} gutterBottom sx={{ mb: 1.5 }}>
+              <Typography
+                variant="subtitle2"
+                fontWeight={600}
+                gutterBottom
+                sx={{ mb: 1.5 }}
+              >
                 Resources
               </Typography>
               <Box display="flex" flexDirection="column" gap={0.8}>
-                <Typography 
-                  variant="body2" 
-                  sx={{ 
-                    color: 'white', 
+                <Typography
+                  variant="body2"
+                  sx={{
+                    color: 'white',
                     opacity: 0.85,
                     fontSize: '0.875rem',
                     cursor: 'pointer',
-                    '&:hover': { opacity: 1 } 
+                    '&:hover': { opacity: 1 },
                   }}
                 >
                   Documentation
                 </Typography>
-                <Typography 
-                  variant="body2" 
-                  sx={{ 
-                    color: 'white', 
+                <Typography
+                  variant="body2"
+                  sx={{
+                    color: 'white',
                     opacity: 0.85,
                     fontSize: '0.875rem',
                     cursor: 'pointer',
-                    '&:hover': { opacity: 1 } 
+                    '&:hover': { opacity: 1 },
                   }}
                 >
                   Help Center
                 </Typography>
-                <Typography 
-                  variant="body2" 
-                  sx={{ 
-                    color: 'white', 
+                <Typography
+                  variant="body2"
+                  sx={{
+                    color: 'white',
                     opacity: 0.85,
                     fontSize: '0.875rem',
                     cursor: 'pointer',
-                    '&:hover': { opacity: 1 } 
+                    '&:hover': { opacity: 1 },
                   }}
                 >
                   Privacy Policy
@@ -518,42 +609,47 @@ export default function Home() {
             </Box>
 
             <Box>
-              <Typography variant="subtitle2" fontWeight={600} gutterBottom sx={{ mb: 1.5 }}>
+              <Typography
+                variant="subtitle2"
+                fontWeight={600}
+                gutterBottom
+                sx={{ mb: 1.5 }}
+              >
                 Company
               </Typography>
               <Box display="flex" flexDirection="column" gap={0.8}>
-                <Typography 
-                  variant="body2" 
-                  sx={{ 
-                    color: 'white', 
+                <Typography
+                  variant="body2"
+                  sx={{
+                    color: 'white',
                     opacity: 0.85,
                     fontSize: '0.875rem',
                     cursor: 'pointer',
-                    '&:hover': { opacity: 1 } 
+                    '&:hover': { opacity: 1 },
                   }}
                 >
                   About Us
                 </Typography>
-                <Typography 
-                  variant="body2" 
-                  sx={{ 
-                    color: 'white', 
+                <Typography
+                  variant="body2"
+                  sx={{
+                    color: 'white',
                     opacity: 0.85,
                     fontSize: '0.875rem',
                     cursor: 'pointer',
-                    '&:hover': { opacity: 1 } 
+                    '&:hover': { opacity: 1 },
                   }}
                 >
                   Contact
                 </Typography>
-                <Typography 
-                  variant="body2" 
-                  sx={{ 
-                    color: 'white', 
+                <Typography
+                  variant="body2"
+                  sx={{
+                    color: 'white',
                     opacity: 0.85,
                     fontSize: '0.875rem',
                     cursor: 'pointer',
-                    '&:hover': { opacity: 1 } 
+                    '&:hover': { opacity: 1 },
                   }}
                 >
                   Terms of Service
@@ -562,16 +658,20 @@ export default function Home() {
             </Box>
           </Box>
 
-          <Box 
-            sx={{ 
-              borderTop: '1px solid rgba(255, 255, 255, 0.1)', 
-              mt: 3, 
+          <Box
+            sx={{
+              borderTop: '1px solid rgba(255, 255, 255, 0.1)',
+              mt: 3,
               pt: 2.5,
-              textAlign: 'center'
+              textAlign: 'center',
             }}
           >
-            <Typography variant="body2" sx={{ opacity: 0.8, fontSize: '0.813rem' }}>
-              © {new Date().getFullYear()} Book Management Portal. All rights reserved.
+            <Typography
+              variant="body2"
+              sx={{ opacity: 0.8, fontSize: '0.813rem' }}
+            >
+              © {new Date().getFullYear()} Book Management Portal. All rights
+              reserved.
             </Typography>
           </Box>
         </Container>

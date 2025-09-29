@@ -2,14 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import {
-  Typography,
-  Box,
-  Card,
-  TextField,
-  Button,
-  Alert,
-} from '@mui/material';
+import { Typography, Box, Card, TextField, Button, Alert } from '@mui/material';
 import { ArrowBack, Save } from '@mui/icons-material';
 import Link from 'next/link';
 import DashboardLayout from '@/components/DashboardLayout';
@@ -27,7 +20,9 @@ export default function NewBookPage() {
     publishedAt: '',
   });
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
@@ -39,12 +34,21 @@ export default function NewBookPage() {
     try {
       await apiClient.post('/books', {
         ...formData,
-        publishedAt: formData.publishedAt ? new Date(formData.publishedAt).toISOString() : null
+        publishedAt: formData.publishedAt
+          ? new Date(formData.publishedAt).toISOString()
+          : null,
       });
       router.push('/books');
     } catch (err) {
-      const error = err as { response?: { data?: { message?: string } }; message?: string };
-      setError(error.response?.data?.message || error.message || 'Failed to create book');
+      const error = err as {
+        response?: { data?: { message?: string } };
+        message?: string;
+      };
+      setError(
+        error.response?.data?.message ||
+          error.message ||
+          'Failed to create book'
+      );
     } finally {
       setLoading(false);
     }
@@ -53,14 +57,32 @@ export default function NewBookPage() {
   return (
     <DashboardLayout>
       <Box sx={{ p: { xs: 2, sm: 3, md: 4 }, maxWidth: 800, mx: 'auto' }}>
-        <Button component={Link} href="/books" variant="outlined" startIcon={<ArrowBack />}
-          sx={{ mb: 3, textTransform: 'none', fontWeight: 600 }}>
+        <Button
+          component={Link}
+          href="/books"
+          variant="outlined"
+          startIcon={<ArrowBack />}
+          sx={{ mb: 3, textTransform: 'none', fontWeight: 600 }}
+        >
           Back to Books
         </Button>
 
-        <Card sx={{ border: '1px solid #e2e8f0', boxShadow: '0 1px 3px rgba(0,0,0,0.06)' }}>
+        <Card
+          sx={{
+            border: '1px solid #e2e8f0',
+            boxShadow: '0 1px 3px rgba(0,0,0,0.06)',
+          }}
+        >
           <Box sx={{ p: { xs: 3, sm: 4 } }}>
-            <Typography variant="h4" fontWeight={700} color="#2d3748" sx={{ mb: 3, fontSize: { xs: '1.5rem', sm: '1.75rem', md: '2rem' } }}>
+            <Typography
+              variant="h4"
+              fontWeight={700}
+              color="#2d3748"
+              sx={{
+                mb: 3,
+                fontSize: { xs: '1.5rem', sm: '1.75rem', md: '2rem' },
+              }}
+            >
               Add New Book
             </Typography>
 
@@ -125,7 +147,13 @@ export default function NewBookPage() {
                 sx={{ mb: 4 }}
               />
 
-              <Box sx={{ display: 'flex', gap: 2, flexDirection: { xs: 'column', sm: 'row' } }}>
+              <Box
+                sx={{
+                  display: 'flex',
+                  gap: 2,
+                  flexDirection: { xs: 'column', sm: 'row' },
+                }}
+              >
                 <Button
                   type="submit"
                   variant="contained"
@@ -138,7 +166,7 @@ export default function NewBookPage() {
                     fontWeight: 600,
                     py: 1.5,
                     backgroundColor: '#3B82F6',
-                    '&:hover': { backgroundColor: '#2563EB' }
+                    '&:hover': { backgroundColor: '#2563EB' },
                   }}
                 >
                   {loading ? 'Creating...' : 'Create Book'}
@@ -165,4 +193,3 @@ export default function NewBookPage() {
     </DashboardLayout>
   );
 }
-

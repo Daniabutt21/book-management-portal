@@ -55,11 +55,11 @@ describe('FeedbackService Integration', () => {
     await prismaService.user.deleteMany({
       where: {
         email: {
-          contains: '@example.com'
-        }
-      }
+          contains: '@example.com',
+        },
+      },
     });
-    
+
     // Clear tracking arrays
     createdFeedbackIds.length = 0;
     createdUserIds.length = 0;

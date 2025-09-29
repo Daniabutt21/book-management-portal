@@ -71,9 +71,11 @@ export default function BookDetailPage() {
       setLoading(true);
       const [bookRes, feedbackRes] = await Promise.all([
         apiClient.get(`/books/${bookId}`),
-        apiClient.get(`/feedback/book/${bookId}?isApproved=true`).catch(() => ({ data: { data: [] } }))
+        apiClient
+          .get(`/feedback/book/${bookId}?isApproved=true`)
+          .catch(() => ({ data: { data: [] } })),
       ]);
-      
+
       setBook(bookRes.data);
       setFeedback(feedbackRes.data.data || []);
     } catch (err) {
@@ -85,7 +87,7 @@ export default function BookDetailPage() {
 
   const handleDelete = async () => {
     if (!confirm('Are you sure you want to delete this book?')) return;
-    
+
     try {
       await apiClient.delete(`/books/${bookId}`);
       router.push('/books');
@@ -96,7 +98,10 @@ export default function BookDetailPage() {
 
   const formatDate = (date: string | null) => {
     if (!date) return 'Unknown';
-    return new Date(date).toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+    return new Date(date).toLocaleDateString('en-US', {
+      month: 'long',
+      year: 'numeric',
+    });
   };
 
   const avgRating = () => {
@@ -107,9 +112,17 @@ export default function BookDetailPage() {
   if (loading) {
     return (
       <DashboardLayout>
-        <Box display="flex" flexDirection="column" justifyContent="center" alignItems="center" minHeight="60vh">
+        <Box
+          display="flex"
+          flexDirection="column"
+          justifyContent="center"
+          alignItems="center"
+          minHeight="60vh"
+        >
           <CircularProgress />
-          <Typography color="text.secondary" sx={{ mt: 2 }}>Loading book...</Typography>
+          <Typography color="text.secondary" sx={{ mt: 2 }}>
+            Loading book...
+          </Typography>
         </Box>
       </DashboardLayout>
     );
@@ -119,8 +132,15 @@ export default function BookDetailPage() {
     return (
       <DashboardLayout>
         <Box sx={{ p: { xs: 2, sm: 3, md: 4 } }}>
-          <Alert severity="error" sx={{ mb: 3 }}>{error || 'Book not found'}</Alert>
-          <Button component={Link} href="/books" variant="outlined" startIcon={<ArrowBack />}>
+          <Alert severity="error" sx={{ mb: 3 }}>
+            {error || 'Book not found'}
+          </Alert>
+          <Button
+            component={Link}
+            href="/books"
+            variant="outlined"
+            startIcon={<ArrowBack />}
+          >
             Back to Books
           </Button>
         </Box>
@@ -131,71 +151,161 @@ export default function BookDetailPage() {
   return (
     <DashboardLayout>
       <Box sx={{ p: { xs: 2, sm: 3, md: 4 }, maxWidth: 1200, mx: 'auto' }}>
-        <Button component={Link} href="/books" variant="outlined" startIcon={<ArrowBack />}
-          sx={{ mb: 3, textTransform: 'none', fontWeight: 600 }}>
+        <Button
+          component={Link}
+          href="/books"
+          variant="outlined"
+          startIcon={<ArrowBack />}
+          sx={{ mb: 3, textTransform: 'none', fontWeight: 600 }}
+        >
           Back to Books
         </Button>
 
-        <Card sx={{ mb: 4, border: '1px solid #e2e8f0', boxShadow: '0 1px 3px rgba(0,0,0,0.06)' }}>
+        <Card
+          sx={{
+            mb: 4,
+            border: '1px solid #e2e8f0',
+            boxShadow: '0 1px 3px rgba(0,0,0,0.06)',
+          }}
+        >
           <Box sx={{ p: { xs: 3, sm: 4 } }}>
-            <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, justifyContent: 'space-between', alignItems: { xs: 'flex-start', sm: 'flex-start' }, mb: 3, gap: 2 }}>
+            <Box
+              sx={{
+                display: 'flex',
+                flexDirection: { xs: 'column', sm: 'row' },
+                justifyContent: 'space-between',
+                alignItems: { xs: 'flex-start', sm: 'flex-start' },
+                mb: 3,
+                gap: 2,
+              }}
+            >
               <Box sx={{ flex: 1 }}>
-                <Typography variant="h4" fontWeight={700} color="#2d3748" 
-                  sx={{ mb: 1, fontSize: { xs: '1.25rem', sm: '1.5rem', md: '2rem' } }}>
+                <Typography
+                  variant="h4"
+                  fontWeight={700}
+                  color="#2d3748"
+                  sx={{
+                    mb: 1,
+                    fontSize: { xs: '1.25rem', sm: '1.5rem', md: '2rem' },
+                  }}
+                >
                   {book.title}
                 </Typography>
-                <Typography variant="h6" color="text.secondary" sx={{ mb: 2, fontSize: { xs: '0.95rem', sm: '1rem', md: '1.125rem' } }}>
+                <Typography
+                  variant="h6"
+                  color="text.secondary"
+                  sx={{
+                    mb: 2,
+                    fontSize: { xs: '0.95rem', sm: '1rem', md: '1.125rem' },
+                  }}
+                >
                   by {book.author}
                 </Typography>
                 {feedback.length > 0 && (
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, flexWrap: 'wrap' }}>
-                    <Rating value={avgRating()} precision={0.5} readOnly size="small" sx={{ color: '#f59e0b' }} />
-                    <Typography variant="body2" color="text.secondary" sx={{ fontSize: { xs: '0.875rem', sm: '0.95rem' } }}>
-                      {avgRating().toFixed(1)} ({feedback.length} review{feedback.length !== 1 ? 's' : ''})
+                  <Box
+                    sx={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 1.5,
+                      flexWrap: 'wrap',
+                    }}
+                  >
+                    <Rating
+                      value={avgRating()}
+                      precision={0.5}
+                      readOnly
+                      size="small"
+                      sx={{ color: '#f59e0b' }}
+                    />
+                    <Typography
+                      variant="body2"
+                      color="text.secondary"
+                      sx={{ fontSize: { xs: '0.875rem', sm: '0.95rem' } }}
+                    >
+                      {avgRating().toFixed(1)} ({feedback.length} review
+                      {feedback.length !== 1 ? 's' : ''})
                     </Typography>
                   </Box>
                 )}
               </Box>
               {user?.role?.name === 'ADMIN' && (
                 <Box sx={{ display: 'flex', gap: 1, flexShrink: 0 }}>
-                  <Button component={Link} href={`/books/${bookId}/edit`} variant="outlined" size="small" startIcon={<Edit />}
-                    sx={{ 
-                      textTransform: 'none', 
+                  <Button
+                    component={Link}
+                    href={`/books/${bookId}/edit`}
+                    variant="outlined"
+                    size="small"
+                    startIcon={<Edit />}
+                    sx={{
+                      textTransform: 'none',
                       fontWeight: 600,
                       fontSize: { xs: '0.8rem', sm: '0.875rem' },
                       px: { xs: 1.5, sm: 2 },
                       borderColor: '#3B82F6',
                       color: '#3B82F6',
-                      '&:hover': { borderColor: '#2563EB', backgroundColor: 'rgba(59, 130, 246, 0.04)' }
-                    }}>
+                      '&:hover': {
+                        borderColor: '#2563EB',
+                        backgroundColor: 'rgba(59, 130, 246, 0.04)',
+                      },
+                    }}
+                  >
                     Edit
                   </Button>
-                  <Button variant="outlined" size="small" startIcon={<Delete />} onClick={handleDelete}
-                    sx={{ 
-                      textTransform: 'none', 
+                  <Button
+                    variant="outlined"
+                    size="small"
+                    startIcon={<Delete />}
+                    onClick={handleDelete}
+                    sx={{
+                      textTransform: 'none',
                       fontWeight: 600,
                       fontSize: { xs: '0.8rem', sm: '0.875rem' },
                       px: { xs: 1.5, sm: 2 },
                       borderColor: '#ef4444',
                       color: '#ef4444',
-                      '&:hover': { borderColor: '#dc2626', backgroundColor: 'rgba(239, 68, 68, 0.04)' }
-                    }}>
+                      '&:hover': {
+                        borderColor: '#dc2626',
+                        backgroundColor: 'rgba(239, 68, 68, 0.04)',
+                      },
+                    }}
+                  >
                     Delete
                   </Button>
                 </Box>
               )}
             </Box>
 
-            <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, gap: { xs: 1.5, sm: 2 }, mb: 3, flexWrap: 'wrap' }}>
+            <Box
+              sx={{
+                display: 'flex',
+                flexDirection: { xs: 'column', sm: 'row' },
+                gap: { xs: 1.5, sm: 2 },
+                mb: 3,
+                flexWrap: 'wrap',
+              }}
+            >
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                <CalendarMonth sx={{ fontSize: { xs: 18, sm: 20 }, color: '#3B82F6' }} />
-                <Typography variant="body2" color="#4a5568" sx={{ fontSize: { xs: '0.875rem', sm: '0.95rem' } }}>
+                <CalendarMonth
+                  sx={{ fontSize: { xs: 18, sm: 20 }, color: '#3B82F6' }}
+                />
+                <Typography
+                  variant="body2"
+                  color="#4a5568"
+                  sx={{ fontSize: { xs: '0.875rem', sm: '0.95rem' } }}
+                >
                   {formatDate(book.publishedAt)}
                 </Typography>
               </Box>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                 <Tag sx={{ fontSize: { xs: 18, sm: 20 }, color: '#3B82F6' }} />
-                <Typography variant="body2" color="#4a5568" sx={{ fontFamily: 'monospace', fontSize: { xs: '0.75rem', sm: '0.875rem' } }}>
+                <Typography
+                  variant="body2"
+                  color="#4a5568"
+                  sx={{
+                    fontFamily: 'monospace',
+                    fontSize: { xs: '0.75rem', sm: '0.875rem' },
+                  }}
+                >
                   ISBN: {book.isbn}
                 </Typography>
               </Box>
@@ -203,33 +313,64 @@ export default function BookDetailPage() {
 
             <Divider sx={{ my: { xs: 2, sm: 3 } }} />
 
-            <Typography variant="body1" color="#4a5568" sx={{ lineHeight: 1.8, fontSize: { xs: '0.875rem', sm: '0.95rem', md: '1rem' } }}>
+            <Typography
+              variant="body1"
+              color="#4a5568"
+              sx={{
+                lineHeight: 1.8,
+                fontSize: { xs: '0.875rem', sm: '0.95rem', md: '1rem' },
+              }}
+            >
               {book.description || 'No description available for this book.'}
             </Typography>
           </Box>
         </Card>
 
-        <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, justifyContent: 'space-between', alignItems: { xs: 'stretch', sm: 'center' }, mb: 3, gap: 2 }}>
-          <Typography variant="h5" fontWeight={700} color="#2d3748" 
-            sx={{ fontSize: { xs: '1.125rem', sm: '1.25rem', md: '1.5rem' } }}>
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: { xs: 'column', sm: 'row' },
+            justifyContent: 'space-between',
+            alignItems: { xs: 'stretch', sm: 'center' },
+            mb: 3,
+            gap: 2,
+          }}
+        >
+          <Typography
+            variant="h5"
+            fontWeight={700}
+            color="#2d3748"
+            sx={{ fontSize: { xs: '1.125rem', sm: '1.25rem', md: '1.5rem' } }}
+          >
             Reviews
           </Typography>
-          <Button component={Link} href={`/books/${bookId}/feedback`} variant="contained" 
+          <Button
+            component={Link}
+            href={`/books/${bookId}/feedback`}
+            variant="contained"
             startIcon={<RateReview sx={{ fontSize: { xs: 18, sm: 20 } }} />}
-            sx={{ 
-              textTransform: 'none', 
+            sx={{
+              textTransform: 'none',
               fontWeight: 600,
               fontSize: { xs: '0.875rem', sm: '0.95rem' },
               py: { xs: 1, sm: 1.25 },
               backgroundColor: '#3B82F6',
-              '&:hover': { backgroundColor: '#2563EB' }
-            }}>
+              '&:hover': { backgroundColor: '#2563EB' },
+            }}
+          >
             Add Review
           </Button>
         </Box>
 
         {feedback.length === 0 ? (
-          <Card sx={{ textAlign: 'center', py: 6, border: '1px solid #e2e8f0', boxShadow: 'none' }}>
+          <Card
+            sx={{
+              textAlign: 'center',
+              py: 6,
+              border: '1px solid #e2e8f0',
+              boxShadow: 'none',
+            }}
+          >
             <Typography variant="h6" color="text.secondary" gutterBottom>
               No reviews yet
             </Typography>
@@ -238,31 +379,83 @@ export default function BookDetailPage() {
             </Typography>
           </Card>
         ) : (
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: { xs: 2, sm: 2.5 } }}>
-            {feedback.map(review => (
-              <Card key={review.id} sx={{ border: '1px solid #e2e8f0', boxShadow: '0 1px 3px rgba(0,0,0,0.06)' }}>
+          <Box
+            sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              gap: { xs: 2, sm: 2.5 },
+            }}
+          >
+            {feedback.map((review) => (
+              <Card
+                key={review.id}
+                sx={{
+                  border: '1px solid #e2e8f0',
+                  boxShadow: '0 1px 3px rgba(0,0,0,0.06)',
+                }}
+              >
                 <Box sx={{ p: { xs: 2.5, sm: 3 } }}>
-                  <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, justifyContent: 'space-between', alignItems: { xs: 'flex-start', sm: 'flex-start' }, mb: 2, gap: { xs: 1.5, sm: 2 } }}>
+                  <Box
+                    sx={{
+                      display: 'flex',
+                      flexDirection: { xs: 'column', sm: 'row' },
+                      justifyContent: 'space-between',
+                      alignItems: { xs: 'flex-start', sm: 'flex-start' },
+                      mb: 2,
+                      gap: { xs: 1.5, sm: 2 },
+                    }}
+                  >
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                      <Avatar sx={{ width: { xs: 36, sm: 40 }, height: { xs: 36, sm: 40 }, backgroundColor: '#3B82F6', fontSize: { xs: '0.875rem', sm: '0.95rem' } }}>
+                      <Avatar
+                        sx={{
+                          width: { xs: 36, sm: 40 },
+                          height: { xs: 36, sm: 40 },
+                          backgroundColor: '#3B82F6',
+                          fontSize: { xs: '0.875rem', sm: '0.95rem' },
+                        }}
+                      >
                         {review.user.name.charAt(0).toUpperCase()}
                       </Avatar>
                       <Box>
-                        <Typography variant="subtitle1" fontWeight={600} color="#2d3748" sx={{ fontSize: { xs: '0.95rem', sm: '1rem' } }}>
+                        <Typography
+                          variant="subtitle1"
+                          fontWeight={600}
+                          color="#2d3748"
+                          sx={{ fontSize: { xs: '0.95rem', sm: '1rem' } }}
+                        >
                           {review.user.name}
                         </Typography>
-                        <Typography variant="caption" color="text.secondary" sx={{ fontSize: { xs: '0.7rem', sm: '0.75rem' } }}>
-                          {new Date(review.createdAt).toLocaleDateString('en-US', { 
-                            month: 'long', 
-                            day: 'numeric', 
-                            year: 'numeric' 
-                          })}
+                        <Typography
+                          variant="caption"
+                          color="text.secondary"
+                          sx={{ fontSize: { xs: '0.7rem', sm: '0.75rem' } }}
+                        >
+                          {new Date(review.createdAt).toLocaleDateString(
+                            'en-US',
+                            {
+                              month: 'long',
+                              day: 'numeric',
+                              year: 'numeric',
+                            }
+                          )}
                         </Typography>
                       </Box>
                     </Box>
-                    <Rating value={review.rating} readOnly size="small" sx={{ color: '#f59e0b' }} />
+                    <Rating
+                      value={review.rating}
+                      readOnly
+                      size="small"
+                      sx={{ color: '#f59e0b' }}
+                    />
                   </Box>
-                  <Typography variant="body2" color="#4a5568" sx={{ lineHeight: 1.7, fontSize: { xs: '0.875rem', sm: '0.95rem' } }}>
+                  <Typography
+                    variant="body2"
+                    color="#4a5568"
+                    sx={{
+                      lineHeight: 1.7,
+                      fontSize: { xs: '0.875rem', sm: '0.95rem' },
+                    }}
+                  >
                     {review.comment}
                   </Typography>
                 </Box>

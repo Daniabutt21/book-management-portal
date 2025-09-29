@@ -46,7 +46,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setUser(response.user);
       router.push('/books');
     } catch (error) {
-      const err = error as { response?: { data?: { message?: string } }; message?: string };
+      const err = error as {
+        response?: { data?: { message?: string } };
+        message?: string;
+      };
       throw new Error(err.response?.data?.message || 'Login failed');
     }
   };
@@ -61,7 +64,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setUser(response.user);
       router.push('/books');
     } catch (error) {
-      const err = error as { response?: { data?: { message?: string } }; message?: string };
+      const err = error as {
+        response?: { data?: { message?: string } };
+        message?: string;
+      };
       throw new Error(err.response?.data?.message || 'Signup failed');
     }
   };

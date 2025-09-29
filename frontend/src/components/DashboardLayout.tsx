@@ -35,9 +35,15 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 
   const menuItems = [
     { text: 'Books', icon: <BookIcon />, href: '/books' },
-    ...(user?.role?.name === 'ADMIN' ? [
-      { text: 'Moderate Reviews', icon: <AdminIcon />, href: '/admin/feedback' }
-    ] : [])
+    ...(user?.role?.name === 'ADMIN'
+      ? [
+          {
+            text: 'Moderate Reviews',
+            icon: <AdminIcon />,
+            href: '/admin/feedback',
+          },
+        ]
+      : []),
   ];
 
   const handleDrawerToggle = () => {
@@ -51,9 +57,9 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
           Book Management
         </Typography>
       </Box>
-      
+
       <Divider sx={{ borderColor: 'rgba(255, 255, 255, 0.1)' }} />
-      
+
       <List sx={{ flexGrow: 1, px: 2, py: 2 }}>
         {menuItems.map((item) => (
           <ListItem key={item.text} disablePadding sx={{ mb: 1 }}>
@@ -75,7 +81,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
               <ListItemIcon sx={{ color: 'inherit', minWidth: 40 }}>
                 {item.icon}
               </ListItemIcon>
-              <ListItemText 
+              <ListItemText
                 primary={item.text}
                 primaryTypographyProps={{ fontWeight: 500 }}
               />
@@ -83,9 +89,9 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
           </ListItem>
         ))}
       </List>
-      
+
       <Divider sx={{ borderColor: 'rgba(255, 255, 255, 0.1)' }} />
-      
+
       <Box sx={{ p: 2 }}>
         <Box display="flex" alignItems="center" gap={2} mb={2}>
           <Avatar sx={{ bgcolor: '#3B82F6', width: 40, height: 40 }}>
@@ -95,10 +101,10 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
             <Typography variant="body2" color="white" fontWeight={600} noWrap>
               {user?.name}
             </Typography>
-            <Chip 
-              label={user?.role.name} 
-              size="small" 
-              sx={{ 
+            <Chip
+              label={user?.role.name}
+              size="small"
+              sx={{
                 backgroundColor: 'rgba(255, 255, 255, 0.1)',
                 color: 'white',
                 fontSize: '0.7rem',
@@ -130,8 +136,6 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 
   return (
     <Box sx={{ display: 'flex' }}>
-      
-
       <Box
         component="nav"
         sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}
@@ -155,7 +159,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
         >
           {drawer}
         </Drawer>
-        
+
         <Drawer
           variant="permanent"
           sx={{

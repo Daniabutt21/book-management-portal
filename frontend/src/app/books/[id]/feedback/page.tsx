@@ -56,8 +56,13 @@ export default function FeedbackPage() {
       const res = await apiClient.get(`/books/${bookId}`);
       setBook(res.data);
     } catch (err) {
-      const error = err as { response?: { data?: { message?: string } }; message?: string };
-      setError(error.response?.data?.message || error.message || 'Failed to load book');
+      const error = err as {
+        response?: { data?: { message?: string } };
+        message?: string;
+      };
+      setError(
+        error.response?.data?.message || error.message || 'Failed to load book'
+      );
     } finally {
       setLoading(false);
     }
@@ -65,12 +70,12 @@ export default function FeedbackPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (rating === 0) {
       setError('Please select a rating');
       return;
     }
-    
+
     if (comment.length < 10) {
       setError('Comment must be at least 10 characters');
       return;
@@ -91,8 +96,15 @@ export default function FeedbackPage() {
         router.push(`/books/${bookId}`);
       }, 1500);
     } catch (err) {
-      const error = err as { response?: { data?: { message?: string } }; message?: string };
-      setError(error.response?.data?.message || error.message || 'Failed to submit review');
+      const error = err as {
+        response?: { data?: { message?: string } };
+        message?: string;
+      };
+      setError(
+        error.response?.data?.message ||
+          error.message ||
+          'Failed to submit review'
+      );
     } finally {
       setSubmitting(false);
     }
@@ -103,7 +115,12 @@ export default function FeedbackPage() {
   if (loading) {
     return (
       <DashboardLayout>
-        <Box display="flex" justifyContent="center" alignItems="center" minHeight="60vh">
+        <Box
+          display="flex"
+          justifyContent="center"
+          alignItems="center"
+          minHeight="60vh"
+        >
           <CircularProgress />
         </Box>
       </DashboardLayout>
@@ -113,14 +130,37 @@ export default function FeedbackPage() {
   if (success) {
     return (
       <DashboardLayout>
-        <Box sx={{ p: { xs: 2, sm: 3, md: 4 }, maxWidth: 600, mx: 'auto', minHeight: '60vh', display: 'flex', alignItems: 'center' }}>
-          <Card sx={{ width: '100%', textAlign: 'center', py: 6, border: '1px solid #e2e8f0', boxShadow: '0 1px 3px rgba(0,0,0,0.06)' }}>
+        <Box
+          sx={{
+            p: { xs: 2, sm: 3, md: 4 },
+            maxWidth: 600,
+            mx: 'auto',
+            minHeight: '60vh',
+            display: 'flex',
+            alignItems: 'center',
+          }}
+        >
+          <Card
+            sx={{
+              width: '100%',
+              textAlign: 'center',
+              py: 6,
+              border: '1px solid #e2e8f0',
+              boxShadow: '0 1px 3px rgba(0,0,0,0.06)',
+            }}
+          >
             <Box sx={{ p: 3 }}>
-              <Typography variant="h5" fontWeight={700} color="#10b981" gutterBottom>
+              <Typography
+                variant="h5"
+                fontWeight={700}
+                color="#10b981"
+                gutterBottom
+              >
                 Review Submitted!
               </Typography>
               <Typography color="text.secondary" sx={{ mb: 1 }}>
-                Thank you for your feedback. Your review will be visible once approved by moderators.
+                Thank you for your feedback. Your review will be visible once
+                approved by moderators.
               </Typography>
               <Typography variant="body2" color="text.secondary">
                 Redirecting...
@@ -135,15 +175,34 @@ export default function FeedbackPage() {
   return (
     <DashboardLayout>
       <Box sx={{ p: { xs: 2, sm: 3, md: 4 }, maxWidth: 700, mx: 'auto' }}>
-        <Button component={Link} href={`/books/${bookId}`} variant="outlined" startIcon={<ArrowBack />}
-          sx={{ mb: 3, textTransform: 'none', fontWeight: 600 }}>
+        <Button
+          component={Link}
+          href={`/books/${bookId}`}
+          variant="outlined"
+          startIcon={<ArrowBack />}
+          sx={{ mb: 3, textTransform: 'none', fontWeight: 600 }}
+        >
           Back to Book
         </Button>
 
         {book && (
-          <Card sx={{ mb: 3, border: '1px solid #e2e8f0', boxShadow: '0 1px 3px rgba(0,0,0,0.06)' }}>
+          <Card
+            sx={{
+              mb: 3,
+              border: '1px solid #e2e8f0',
+              boxShadow: '0 1px 3px rgba(0,0,0,0.06)',
+            }}
+          >
             <Box sx={{ p: 3, display: 'flex', alignItems: 'center', gap: 2 }}>
-              <Avatar sx={{ width: 56, height: 56, backgroundColor: '#3B82F6', fontSize: '1.125rem', fontWeight: 700 }}>
+              <Avatar
+                sx={{
+                  width: 56,
+                  height: 56,
+                  backgroundColor: '#3B82F6',
+                  fontSize: '1.125rem',
+                  fontWeight: 700,
+                }}
+              >
                 {book.title.substring(0, 2).toUpperCase()}
               </Avatar>
               <Box>
@@ -158,9 +217,19 @@ export default function FeedbackPage() {
           </Card>
         )}
 
-        <Card sx={{ border: '1px solid #e2e8f0', boxShadow: '0 1px 3px rgba(0,0,0,0.06)' }}>
+        <Card
+          sx={{
+            border: '1px solid #e2e8f0',
+            boxShadow: '0 1px 3px rgba(0,0,0,0.06)',
+          }}
+        >
           <Box sx={{ p: { xs: 3, sm: 4 } }}>
-            <Typography variant="h5" fontWeight={700} color="#2d3748" sx={{ mb: 3, fontSize: { xs: '1.25rem', sm: '1.5rem' } }}>
+            <Typography
+              variant="h5"
+              fontWeight={700}
+              color="#2d3748"
+              sx={{ mb: 3, fontSize: { xs: '1.25rem', sm: '1.5rem' } }}
+            >
               Write Your Review
             </Typography>
 
@@ -172,14 +241,22 @@ export default function FeedbackPage() {
 
             <Box component="form" onSubmit={handleSubmit}>
               <Box sx={{ mb: 3 }}>
-                <Typography variant="subtitle1" fontWeight={600} color="#2d3748" gutterBottom>
+                <Typography
+                  variant="subtitle1"
+                  fontWeight={600}
+                  color="#2d3748"
+                  gutterBottom
+                >
                   Your Rating *
                 </Typography>
                 <Rating
                   value={rating}
                   onChange={(_, val) => setRating(val || 0)}
                   size="large"
-                  sx={{ color: '#f59e0b', fontSize: { xs: '2rem', sm: '2.5rem' } }}
+                  sx={{
+                    color: '#f59e0b',
+                    fontSize: { xs: '2rem', sm: '2.5rem' },
+                  }}
                 />
               </Box>
 
@@ -196,7 +273,13 @@ export default function FeedbackPage() {
                 sx={{ mb: 4 }}
               />
 
-              <Box sx={{ display: 'flex', gap: 2, flexDirection: { xs: 'column', sm: 'row' } }}>
+              <Box
+                sx={{
+                  display: 'flex',
+                  gap: 2,
+                  flexDirection: { xs: 'column', sm: 'row' },
+                }}
+              >
                 <Button
                   type="submit"
                   variant="contained"
@@ -209,7 +292,7 @@ export default function FeedbackPage() {
                     fontWeight: 600,
                     py: 1.5,
                     backgroundColor: '#3B82F6',
-                    '&:hover': { backgroundColor: '#2563EB' }
+                    '&:hover': { backgroundColor: '#2563EB' },
                   }}
                 >
                   {submitting ? 'Submitting...' : 'Submit Review'}

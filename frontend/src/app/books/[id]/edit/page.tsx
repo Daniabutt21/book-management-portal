@@ -49,13 +49,15 @@ export default function EditBookPage() {
     try {
       const res = await apiClient.get(`/books/${bookId}`);
       const book: Book = res.data;
-      
+
       setFormData({
         title: book.title,
         author: book.author,
         isbn: book.isbn,
         description: book.description || '',
-        publishedAt: book.publishedAt ? new Date(book.publishedAt).toISOString().split('T')[0] : '',
+        publishedAt: book.publishedAt
+          ? new Date(book.publishedAt).toISOString().split('T')[0]
+          : '',
       });
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to load book');
@@ -64,7 +66,9 @@ export default function EditBookPage() {
     }
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
@@ -76,12 +80,21 @@ export default function EditBookPage() {
     try {
       await apiClient.patch(`/books/${bookId}`, {
         ...formData,
-        publishedAt: formData.publishedAt ? new Date(formData.publishedAt).toISOString() : null
+        publishedAt: formData.publishedAt
+          ? new Date(formData.publishedAt).toISOString()
+          : null,
       });
       router.push(`/books/${bookId}`);
     } catch (err) {
-      const error = err as { response?: { data?: { message?: string } }; message?: string };
-      setError(error.response?.data?.message || error.message || 'Failed to update book');
+      const error = err as {
+        response?: { data?: { message?: string } };
+        message?: string;
+      };
+      setError(
+        error.response?.data?.message ||
+          error.message ||
+          'Failed to update book'
+      );
     } finally {
       setSaving(false);
     }
@@ -90,7 +103,12 @@ export default function EditBookPage() {
   if (loading) {
     return (
       <DashboardLayout>
-        <Box display="flex" justifyContent="center" alignItems="center" minHeight="60vh">
+        <Box
+          display="flex"
+          justifyContent="center"
+          alignItems="center"
+          minHeight="60vh"
+        >
           <CircularProgress />
         </Box>
       </DashboardLayout>
@@ -100,14 +118,32 @@ export default function EditBookPage() {
   return (
     <DashboardLayout>
       <Box sx={{ p: { xs: 2, sm: 3, md: 4 }, maxWidth: 800, mx: 'auto' }}>
-        <Button component={Link} href={`/books/${bookId}`} variant="outlined" startIcon={<ArrowBack />}
-          sx={{ mb: 3, textTransform: 'none', fontWeight: 600 }}>
+        <Button
+          component={Link}
+          href={`/books/${bookId}`}
+          variant="outlined"
+          startIcon={<ArrowBack />}
+          sx={{ mb: 3, textTransform: 'none', fontWeight: 600 }}
+        >
           Back to Book
         </Button>
 
-        <Card sx={{ border: '1px solid #e2e8f0', boxShadow: '0 1px 3px rgba(0,0,0,0.06)' }}>
+        <Card
+          sx={{
+            border: '1px solid #e2e8f0',
+            boxShadow: '0 1px 3px rgba(0,0,0,0.06)',
+          }}
+        >
           <Box sx={{ p: { xs: 3, sm: 4 } }}>
-            <Typography variant="h4" fontWeight={700} color="#2d3748" sx={{ mb: 3, fontSize: { xs: '1.5rem', sm: '1.75rem', md: '2rem' } }}>
+            <Typography
+              variant="h4"
+              fontWeight={700}
+              color="#2d3748"
+              sx={{
+                mb: 3,
+                fontSize: { xs: '1.5rem', sm: '1.75rem', md: '2rem' },
+              }}
+            >
               Edit Book
             </Typography>
 
@@ -172,7 +208,13 @@ export default function EditBookPage() {
                 sx={{ mb: 4 }}
               />
 
-              <Box sx={{ display: 'flex', gap: 2, flexDirection: { xs: 'column', sm: 'row' } }}>
+              <Box
+                sx={{
+                  display: 'flex',
+                  gap: 2,
+                  flexDirection: { xs: 'column', sm: 'row' },
+                }}
+              >
                 <Button
                   type="submit"
                   variant="contained"
@@ -185,7 +227,7 @@ export default function EditBookPage() {
                     fontWeight: 600,
                     py: 1.5,
                     backgroundColor: '#3B82F6',
-                    '&:hover': { backgroundColor: '#2563EB' }
+                    '&:hover': { backgroundColor: '#2563EB' },
                   }}
                 >
                   {saving ? 'Saving...' : 'Save Changes'}
@@ -212,4 +254,3 @@ export default function EditBookPage() {
     </DashboardLayout>
   );
 }
-

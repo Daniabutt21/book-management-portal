@@ -76,7 +76,11 @@ describe('AuthService', () => {
         updatedAt: new Date(),
       };
 
-      mockPrismaService.role.upsert.mockResolvedValue({ id: 'user', name: 'USER', description: 'Regular user' });
+      mockPrismaService.role.upsert.mockResolvedValue({
+        id: 'user',
+        name: 'USER',
+        description: 'Regular user',
+      });
       mockPrismaService.user.findUnique.mockResolvedValue(null);
       mockPrismaService.user.create.mockResolvedValue(createdUser);
       mockedBcrypt.hash.mockResolvedValue(hashedPassword as never);
@@ -150,7 +154,11 @@ describe('AuthService', () => {
         updatedAt: new Date(),
       };
 
-      mockPrismaService.role.upsert.mockResolvedValue({ id: 'user', name: 'USER', description: 'Regular user' });
+      mockPrismaService.role.upsert.mockResolvedValue({
+        id: 'user',
+        name: 'USER',
+        description: 'Regular user',
+      });
       mockPrismaService.user.findUnique.mockResolvedValue(null);
       mockPrismaService.user.create.mockResolvedValue(createdUser);
       mockedBcrypt.hash.mockResolvedValue(hashedPassword as never);
