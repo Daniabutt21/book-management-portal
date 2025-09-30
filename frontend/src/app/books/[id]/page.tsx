@@ -133,16 +133,16 @@ export default function BookDetailPage() {
       <DashboardLayout>
         <Box sx={{ p: { xs: 2, sm: 3, md: 4 } }}>
           <Alert severity="error" sx={{ mb: 3 }}>
-          {error || 'Book not found'}
-        </Alert>
+            {error || 'Book not found'}
+          </Alert>
           <Button
             component={Link}
             href="/books"
             variant="outlined"
             startIcon={<ArrowBack />}
           >
-          Back to Books
-        </Button>
+            Back to Books
+          </Button>
         </Box>
       </DashboardLayout>
     );
@@ -160,7 +160,7 @@ export default function BookDetailPage() {
         >
           Back to Books
         </Button>
-        
+
         <Card
           sx={{
             mb: 4,
@@ -189,8 +189,8 @@ export default function BookDetailPage() {
                     fontSize: { xs: '1.25rem', sm: '1.5rem', md: '2rem' },
                   }}
                 >
-              {book.title}
-            </Typography>
+                  {book.title}
+                </Typography>
                 <Typography
                   variant="h6"
                   color="text.secondary"
@@ -199,7 +199,7 @@ export default function BookDetailPage() {
                     fontSize: { xs: '0.95rem', sm: '1rem', md: '1.125rem' },
                   }}
                 >
-              by {book.author}
+                  by {book.author}
                 </Typography>
                 {feedback.length > 0 && (
                   <Box
@@ -230,8 +230,8 @@ export default function BookDetailPage() {
               </Box>
               {user?.role?.name === 'ADMIN' && (
                 <Box sx={{ display: 'flex', gap: 1, flexShrink: 0 }}>
-                <Button 
-                  component={Link} 
+                  <Button
+                    component={Link}
                     href={`/books/${bookId}/edit`}
                     variant="outlined"
                     size="small"
@@ -270,7 +270,7 @@ export default function BookDetailPage() {
                     }}
                   >
                     Delete
-                </Button>
+                  </Button>
                 </Box>
               )}
             </Box>
@@ -307,8 +307,8 @@ export default function BookDetailPage() {
                   }}
                 >
                   ISBN: {book.isbn}
-                          </Typography>
-                        </Box>
+                </Typography>
+              </Box>
             </Box>
 
             <Divider sx={{ my: { xs: 2, sm: 3 } }} />
@@ -322,7 +322,7 @@ export default function BookDetailPage() {
               }}
             >
               {book.description || 'No description available for this book.'}
-                          </Typography>
+            </Typography>
           </Box>
         </Card>
 
@@ -360,8 +360,8 @@ export default function BookDetailPage() {
           >
             Add Review
           </Button>
-                        </Box>
-                        
+        </Box>
+
         {feedback.length === 0 ? (
           <Card
             sx={{
@@ -459,10 +459,10 @@ export default function BookDetailPage() {
                     {review.comment}
                   </Typography>
                 </Box>
-                    </Card>
-                ))}
+              </Card>
+            ))}
           </Box>
-            )}
+        )}
       </Box>
     </DashboardLayout>
   );

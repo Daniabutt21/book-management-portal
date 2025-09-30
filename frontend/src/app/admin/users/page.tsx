@@ -77,7 +77,6 @@ interface FeedbackData {
   isApproved: boolean;
 }
 
-
 export default function UsersManagementPage() {
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
@@ -143,13 +142,19 @@ export default function UsersManagementPage() {
       // Get user's feedback stats instead of books
       const response = await apiClient.get(`/feedback/user/${userId}`);
       const feedbacks = response.data.data || response.data;
-      const approvedCount = feedbacks.filter((f: FeedbackData) => f.isApproved).length;
-      const pendingCount = feedbacks.filter((f: FeedbackData) => !f.isApproved).length;
+      const approvedCount = feedbacks.filter(
+        (f: FeedbackData) => f.isApproved
+      ).length;
+      const pendingCount = feedbacks.filter(
+        (f: FeedbackData) => !f.isApproved
+      ).length;
       const avgRating =
         feedbacks.length > 0
           ? (
-              feedbacks.reduce((sum: number, f: FeedbackData) => sum + f.rating, 0) /
-              feedbacks.length
+              feedbacks.reduce(
+                (sum: number, f: FeedbackData) => sum + f.rating,
+                0
+              ) / feedbacks.length
             ).toFixed(1)
           : 0;
 
@@ -183,7 +188,10 @@ export default function UsersManagementPage() {
       await apiClient.delete(`/feedback/${feedbackId}`);
       setUserFeedback((prev) => prev.filter((f) => f.id !== feedbackId));
     } catch (err) {
-      setError((err as { response?: { data?: { message?: string } } }).response?.data?.message || 'Failed to delete feedback');
+      setError(
+        (err as { response?: { data?: { message?: string } } }).response?.data
+          ?.message || 'Failed to delete feedback'
+      );
     }
   };
 
@@ -734,7 +742,14 @@ export default function UsersManagementPage() {
                   No feedback submitted yet
                 </Typography>
               ) : (
-                <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)' }, gap: 2, mb: 3 }}>
+                <Box
+                  sx={{
+                    display: 'grid',
+                    gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)' },
+                    gap: 2,
+                    mb: 3,
+                  }}
+                >
                   {userFeedback.map((feedback) => (
                     <Box key={feedback.id}>
                       <Card sx={{ p: 2 }}>
@@ -813,7 +828,9 @@ export default function UsersManagementPage() {
                   <CircularProgress />
                 </Box>
               ) : (
-                <Box sx={{ display: 'grid', gridTemplateColumns: '1fr', gap: 2 }}>
+                <Box
+                  sx={{ display: 'grid', gridTemplateColumns: '1fr', gap: 2 }}
+                >
                   {userBooks.map((stat) => (
                     <Box key={stat.id}>
                       <Card

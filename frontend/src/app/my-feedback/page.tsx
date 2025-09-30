@@ -68,7 +68,10 @@ export default function MyFeedbackPage() {
       setFeedbacks(Array.isArray(feedbacks) ? feedbacks : []);
     } catch (err) {
       console.error('Error fetching feedback:', err); // Debug log
-      setError((err as { response?: { data?: { message?: string } } }).response?.data?.message || 'Failed to fetch feedback');
+      setError(
+        (err as { response?: { data?: { message?: string } } }).response?.data
+          ?.message || 'Failed to fetch feedback'
+      );
       setFeedbacks([]); // Set empty array on error
     } finally {
       setLoading(false);
@@ -115,7 +118,10 @@ export default function MyFeedbackPage() {
       setEditDialogOpen(false);
       setEditingFeedback(null);
     } catch (err) {
-      setError((err as { response?: { data?: { message?: string } } }).response?.data?.message || 'Failed to update feedback');
+      setError(
+        (err as { response?: { data?: { message?: string } } }).response?.data
+          ?.message || 'Failed to update feedback'
+      );
     } finally {
       setSubmitting(false);
     }
@@ -128,7 +134,10 @@ export default function MyFeedbackPage() {
       await apiClient.delete(`/feedback/${feedbackId}`);
       setFeedbacks((prev) => prev.filter((f) => f.id !== feedbackId));
     } catch (err) {
-      setError((err as { response?: { data?: { message?: string } } }).response?.data?.message || 'Failed to delete feedback');
+      setError(
+        (err as { response?: { data?: { message?: string } } }).response?.data
+          ?.message || 'Failed to delete feedback'
+      );
     }
   };
 

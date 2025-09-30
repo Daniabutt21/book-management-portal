@@ -55,13 +55,16 @@ export default function BooksPage() {
   const [total, setTotal] = useState(0);
   const { isAuthenticated, user } = useAuth();
 
-  const fetchBooks = useCallback(async () => {
+  const fetchBooks = useCallback(async (title?: string, author?: string, isbn?: string) => {
+    const searchTitleValue = title !== undefined ? title : searchTitle;
+    const searchAuthorValue = author !== undefined ? author : searchAuthor;
+    const searchISBNValue = isbn !== undefined ? isbn : searchISBN;
     try {
       setLoading(true);
       const params = new URLSearchParams();
-      if (searchTitle) params.append('title', searchTitle);
-      if (searchAuthor) params.append('author', searchAuthor);
-      if (searchISBN) params.append('isbn', searchISBN);
+      if (searchTitleValue) params.append('title', searchTitleValue);
+      if (searchAuthorValue) params.append('author', searchAuthorValue);
+      if (searchISBNValue) params.append('isbn', searchISBNValue);
       params.append('page', page.toString());
       params.append('limit', '8');
 
@@ -91,7 +94,7 @@ export default function BooksPage() {
     } finally {
       setLoading(false);
     }
-  }, [page, tab, searchTitle, searchAuthor, searchISBN]);
+  }, [page, tab]);
 
   useEffect(() => {
     fetchBooks();
@@ -99,14 +102,37 @@ export default function BooksPage() {
 
   const handleSearch = () => {
     setPage(1);
-    fetchBooks();
+    fetchBooks(searchTitle, searchAuthor, searchISBN);
+  };
+
+  const fetchAllBooks = async () => {
+    try {
+      setLoading(true);
+      const params = new URLSearchParams();
+      params.append('page', '1');
+      params.append('limit', '8');
+
+      const url = `/books?${params.toString()}`;
+      const res = await apiClient.get(url);
+      const fetchedBooks = res.data.data || [];
+
+      setBooks(fetchedBooks);
+      setTotalPages(res.data.pagination?.totalPages || 1);
+      setTotal(res.data.pagination?.total || 0);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Error loading books');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleClearFilters = () => {
     setSearchTitle('');
     setSearchAuthor('');
     setSearchISBN('');
+    setTab(0); // Reset to "All Books" tab
     setPage(1);
+    fetchAllBooks();
   };
 
   const handlePageChange = (
@@ -122,12 +148,6 @@ export default function BooksPage() {
     setPage(1);
   };
 
-  useEffect(() => {
-    if (!searchTitle && !searchAuthor && !searchISBN) {
-      setPage(1);
-      fetchBooks();
-    }
-  }, [searchTitle, searchAuthor, searchISBN, fetchBooks]);
 
   const formatDate = (date: string | null) => {
     if (!date) return 'Unknown';
@@ -806,7 +826,7 @@ export default function BooksPage() {
                   page={page}
                   onChange={handlePageChange}
                   color="primary"
-                  size={window.innerWidth < 600 ? 'small' : 'medium'}
+                  size="medium"
                   sx={{
                     '& .MuiPaginationItem-root': {
                       fontWeight: 500,
@@ -817,6 +837,11 @@ export default function BooksPage() {
                           backgroundColor: '#2563EB',
                         },
                       },
+                    },
+                    '& .MuiPaginationItem-sizeMedium': {
+                      fontSize: { xs: '0.75rem', sm: '0.875rem' },
+                      minWidth: { xs: '32px', sm: '40px' },
+                      height: { xs: '32px', sm: '40px' },
                     },
                   }}
                   showFirstButton
