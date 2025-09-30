@@ -1,8 +1,5 @@
 # book-management-portal
 
-[![CI Pipeline](https://github.com/YOUR_USERNAME/book-management-portal/actions/workflows/ci.yml/badge.svg)](https://github.com/YOUR_USERNAME/book-management-portal/actions/workflows/ci.yml)
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
-
 Full-stack Book Management Portal built with Next.js, NestJS, Prisma, and SQLite. Features authentication, role-based access, book CRUD operations, feedback system, API docs, and testing.
 
 ## Features
@@ -405,6 +402,14 @@ NEXT_PUBLIC_API_URL="http://localhost:3001"
 ```
 
 ## Deployment
+
+### CI/CD Pipeline
+
+The project includes a GitHub Actions CI/CD pipeline that:
+- Automatically runs tests on pull requests and pushes
+- Builds and validates both frontend and backend
+- Ensures code quality with linting and type checking
+- Provides automated deployment capabilities
 
 ### Docker Deployment
 
