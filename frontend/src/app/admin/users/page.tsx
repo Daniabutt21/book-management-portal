@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import {
   Typography,
   Box,
@@ -16,12 +16,23 @@ import {
   InputLabel,
   Pagination,
   IconButton,
+  TextField,
+  InputAdornment,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Rating,
+  Divider,
 } from '@mui/material';
 import {
   People,
   AdminPanelSettings,
   Person,
   Delete,
+  Search,
+  Visibility,
+  RateReview,
 } from '@mui/icons-material';
 import { useAuth } from '@/hooks/useAuth';
 import DashboardLayout from '@/components/DashboardLayout';
@@ -40,6 +51,33 @@ interface User {
   };
 }
 
+interface UserFeedback {
+  id: string;
+  rating: number;
+  comment: string;
+  isApproved: boolean;
+  createdAt: string;
+  book: {
+    id: string;
+    title: string;
+    author: string;
+  };
+}
+
+interface UserBook {
+  id: string;
+  title: string;
+  author: string;
+  isbn: string;
+  createdAt: string;
+}
+
+interface FeedbackData {
+  rating: number;
+  isApproved: boolean;
+}
+
+
 export default function UsersManagementPage() {
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
@@ -47,18 +85,17 @@ export default function UsersManagementPage() {
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [total, setTotal] = useState(0);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedUser, setSelectedUser] = useState<User | null>(null);
+  const [userFeedback, setUserFeedback] = useState<UserFeedback[]>([]);
+  const [userBooks, setUserBooks] = useState<UserBook[]>([]);
+  const [feedbackLoading, setFeedbackLoading] = useState(false);
+  const [booksLoading, setBooksLoading] = useState(false);
+  const [detailsDialogOpen, setDetailsDialogOpen] = useState(false);
   const { user } = useAuth();
   const router = useRouter();
 
-  useEffect(() => {
-    if (user?.role?.name !== 'ADMIN') {
-      router.push('/books');
-      return;
-    }
-    fetchUsers();
-  }, [user, router, page]);
-
-  const fetchUsers = async () => {
+  const fetchUsers = useCallback(async () => {
     try {
       setLoading(true);
       const params = new URLSearchParams();
@@ -72,12 +109,89 @@ export default function UsersManagementPage() {
       setUsers(userData);
       setTotalPages(res.data?.pagination?.totalPages || 1);
       setTotal(res.data?.pagination?.total || userData.length);
-    } catch (err) {
+    } catch {
       setError('Failed to load users');
     } finally {
       setLoading(false);
     }
+  }, [page]);
+
+  useEffect(() => {
+    if (user?.role?.name !== 'ADMIN') {
+      router.push('/books');
+      return;
+    }
+    fetchUsers();
+  }, [user, router, fetchUsers]);
+
+  const fetchUserFeedback = async (userId: string) => {
+    try {
+      setFeedbackLoading(true);
+      const response = await apiClient.get(`/feedback/user/${userId}`);
+      setUserFeedback(response.data.data || response.data);
+    } catch (err) {
+      console.error('Failed to fetch user feedback:', err);
+      setUserFeedback([]);
+    } finally {
+      setFeedbackLoading(false);
+    }
   };
+
+  const fetchUserStats = async (userId: string) => {
+    try {
+      setBooksLoading(true);
+      // Get user's feedback stats instead of books
+      const response = await apiClient.get(`/feedback/user/${userId}`);
+      const feedbacks = response.data.data || response.data;
+      const approvedCount = feedbacks.filter((f: FeedbackData) => f.isApproved).length;
+      const pendingCount = feedbacks.filter((f: FeedbackData) => !f.isApproved).length;
+      const avgRating =
+        feedbacks.length > 0
+          ? (
+              feedbacks.reduce((sum: number, f: FeedbackData) => sum + f.rating, 0) /
+              feedbacks.length
+            ).toFixed(1)
+          : 0;
+
+      setUserBooks([
+        {
+          id: 'stats',
+          title: `Total Feedback: ${feedbacks.length}`,
+          author: `Approved: ${approvedCount} | Pending: ${pendingCount}`,
+          isbn: `Average Rating: ${avgRating}/5`,
+          createdAt: new Date().toISOString(),
+        },
+      ]);
+    } catch (err) {
+      console.error('Failed to fetch user stats:', err);
+      setUserBooks([]);
+    } finally {
+      setBooksLoading(false);
+    }
+  };
+
+  const handleViewUserDetails = async (user: User) => {
+    setSelectedUser(user);
+    setDetailsDialogOpen(true);
+    await Promise.all([fetchUserFeedback(user.id), fetchUserStats(user.id)]);
+  };
+
+  const handleDeleteFeedback = async (feedbackId: string) => {
+    if (!confirm('Are you sure you want to delete this feedback?')) return;
+
+    try {
+      await apiClient.delete(`/feedback/${feedbackId}`);
+      setUserFeedback((prev) => prev.filter((f) => f.id !== feedbackId));
+    } catch (err) {
+      setError((err as { response?: { data?: { message?: string } } }).response?.data?.message || 'Failed to delete feedback');
+    }
+  };
+
+  const filteredUsers = users.filter(
+    (user) =>
+      user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      user.email.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   const handleRoleChange = async (userId: string, newRole: string) => {
     try {
@@ -93,7 +207,7 @@ export default function UsersManagementPage() {
             : u
         )
       );
-    } catch (err) {
+    } catch {
       alert('Failed to update user role');
     }
   };
@@ -116,7 +230,7 @@ export default function UsersManagementPage() {
       await apiClient.delete(`/users/${userId}`);
       setUsers(users.filter((u) => u.id !== userId));
       setTotal(total - 1);
-    } catch (err) {
+    } catch {
       alert('Failed to delete user');
     }
   };
@@ -192,10 +306,25 @@ export default function UsersManagementPage() {
           </Typography>
           <Typography
             color="text.secondary"
-            sx={{ fontSize: { xs: '0.875rem', sm: '1rem' } }}
+            sx={{ fontSize: { xs: '0.875rem', sm: '1rem' }, mb: 3 }}
           >
             Manage users and assign roles
           </Typography>
+
+          <TextField
+            fullWidth
+            placeholder="Search users by name or email..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <Search />
+                </InputAdornment>
+              ),
+            }}
+            sx={{ maxWidth: 400 }}
+          />
         </Box>
 
         <Box
@@ -312,7 +441,7 @@ export default function UsersManagementPage() {
           </Box>
 
           <Box sx={{ p: { xs: 2, sm: 3 } }}>
-            {users.map((u) => (
+            {filteredUsers.map((u) => (
               <Card
                 key={u.id}
                 sx={{
@@ -479,6 +608,20 @@ export default function UsersManagementPage() {
                     />
                   )}
 
+                  <IconButton
+                    onClick={() => handleViewUserDetails(u)}
+                    size="small"
+                    sx={{
+                      color: '#3B82F6',
+                      padding: { xs: 0.75, sm: 1 },
+                      '&:hover': {
+                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                      },
+                    }}
+                  >
+                    <Visibility sx={{ fontSize: { xs: 20, sm: 22 } }} />
+                  </IconButton>
+
                   {u.email !== user?.email && (
                     <IconButton
                       onClick={() => handleDeleteUser(u.id, u.email)}
@@ -539,15 +682,175 @@ export default function UsersManagementPage() {
               </Box>
             )}
 
-            {users.length === 0 && (
+            {filteredUsers.length === 0 && (
               <Box sx={{ textAlign: 'center', py: 6 }}>
                 <Typography variant="h6" color="text.secondary">
-                  No users found
+                  {searchTerm
+                    ? 'No users found matching your search'
+                    : 'No users found'}
                 </Typography>
               </Box>
             )}
           </Box>
         </Card>
+
+        {/* User Details Dialog */}
+        <Dialog
+          open={detailsDialogOpen}
+          onClose={() => setDetailsDialogOpen(false)}
+          maxWidth="md"
+          fullWidth
+        >
+          <DialogTitle>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+              <Avatar sx={{ bgcolor: 'primary.main' }}>
+                {selectedUser?.name.charAt(0).toUpperCase()}
+              </Avatar>
+              <Box>
+                <Typography variant="h6">{selectedUser?.name}</Typography>
+                <Typography variant="body2" color="text.secondary">
+                  {selectedUser?.email}
+                </Typography>
+              </Box>
+            </Box>
+          </DialogTitle>
+          <DialogContent>
+            <Box sx={{ mt: 2 }}>
+              <Typography
+                variant="h6"
+                gutterBottom
+                sx={{ display: 'flex', alignItems: 'center', gap: 1 }}
+              >
+                <RateReview />
+                User Feedback ({userFeedback.length})
+              </Typography>
+
+              {feedbackLoading ? (
+                <Box sx={{ display: 'flex', justifyContent: 'center', py: 4 }}>
+                  <CircularProgress />
+                </Box>
+              ) : userFeedback.length === 0 ? (
+                <Typography color="text.secondary" sx={{ py: 2 }}>
+                  No feedback submitted yet
+                </Typography>
+              ) : (
+                <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)' }, gap: 2, mb: 3 }}>
+                  {userFeedback.map((feedback) => (
+                    <Box key={feedback.id}>
+                      <Card sx={{ p: 2 }}>
+                        <Box
+                          sx={{
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            alignItems: 'flex-start',
+                            mb: 1,
+                          }}
+                        >
+                          <Chip
+                            label={feedback.isApproved ? 'Approved' : 'Pending'}
+                            color={feedback.isApproved ? 'success' : 'warning'}
+                            size="small"
+                          />
+                          <IconButton
+                            size="small"
+                            onClick={() => handleDeleteFeedback(feedback.id)}
+                            color="error"
+                          >
+                            <Delete fontSize="small" />
+                          </IconButton>
+                        </Box>
+                        <Typography variant="subtitle2" fontWeight={600}>
+                          {feedback.book.title}
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          color="text.secondary"
+                          sx={{ mb: 1 }}
+                        >
+                          by {feedback.book.author}
+                        </Typography>
+                        <Box
+                          sx={{ display: 'flex', alignItems: 'center', mb: 1 }}
+                        >
+                          <Rating
+                            value={feedback.rating}
+                            readOnly
+                            size="small"
+                          />
+                          <Typography
+                            variant="body2"
+                            color="text.secondary"
+                            sx={{ ml: 1 }}
+                          >
+                            ({feedback.rating}/5)
+                          </Typography>
+                        </Box>
+                        <Typography variant="body2" sx={{ mb: 1 }}>
+                          {feedback.comment}
+                        </Typography>
+                        <Typography variant="caption" color="text.secondary">
+                          {new Date(feedback.createdAt).toLocaleDateString()}
+                        </Typography>
+                      </Card>
+                    </Box>
+                  ))}
+                </Box>
+              )}
+
+              <Divider sx={{ my: 3 }} />
+
+              <Typography
+                variant="h6"
+                gutterBottom
+                sx={{ display: 'flex', alignItems: 'center', gap: 1 }}
+              >
+                <AdminPanelSettings />
+                User Statistics
+              </Typography>
+
+              {booksLoading ? (
+                <Box sx={{ display: 'flex', justifyContent: 'center', py: 4 }}>
+                  <CircularProgress />
+                </Box>
+              ) : (
+                <Box sx={{ display: 'grid', gridTemplateColumns: '1fr', gap: 2 }}>
+                  {userBooks.map((stat) => (
+                    <Box key={stat.id}>
+                      <Card
+                        sx={{
+                          p: 3,
+                          background:
+                            'linear-gradient(135deg, #3B82F6 0%, #1E40AF 100%)',
+                          color: 'white',
+                        }}
+                      >
+                        <Typography
+                          variant="h5"
+                          fontWeight={600}
+                          sx={{ mb: 1 }}
+                        >
+                          {stat.title}
+                        </Typography>
+                        <Typography
+                          variant="body1"
+                          sx={{ mb: 1, opacity: 0.9 }}
+                        >
+                          {stat.author}
+                        </Typography>
+                        <Typography variant="body1" sx={{ opacity: 0.9 }}>
+                          {stat.isbn}
+                        </Typography>
+                      </Card>
+                    </Box>
+                  ))}
+                </Box>
+              )}
+            </Box>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={() => setDetailsDialogOpen(false)}>Close</Button>
+          </DialogActions>
+        </Dialog>
       </Box>
     </DashboardLayout>
   );

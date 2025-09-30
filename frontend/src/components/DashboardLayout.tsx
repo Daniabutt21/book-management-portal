@@ -24,6 +24,7 @@ import {
   AdminPanelSettings as AdminIcon,
   People as PeopleIcon,
   Menu as MenuIcon,
+  RateReview as FeedbackIcon,
 } from '@mui/icons-material';
 import Link from 'next/link';
 import { useAuth } from '@/hooks/useAuth';
@@ -40,6 +41,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 
   const menuItems = [
     { text: 'Books', icon: <BookIcon />, href: '/books' },
+    { text: 'My Feedback', icon: <FeedbackIcon />, href: '/my-feedback' },
     ...(user?.role?.name === 'ADMIN'
       ? [
           {

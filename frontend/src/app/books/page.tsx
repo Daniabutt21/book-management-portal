@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import {
   Typography,
   Box,
@@ -55,11 +55,7 @@ export default function BooksPage() {
   const [total, setTotal] = useState(0);
   const { isAuthenticated, user } = useAuth();
 
-  useEffect(() => {
-    fetchBooks();
-  }, [page, tab]);
-
-  const fetchBooks = async () => {
+  const fetchBooks = useCallback(async () => {
     try {
       setLoading(true);
       const params = new URLSearchParams();
@@ -95,7 +91,11 @@ export default function BooksPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [page, tab, searchTitle, searchAuthor, searchISBN]);
+
+  useEffect(() => {
+    fetchBooks();
+  }, [fetchBooks]);
 
   const handleSearch = () => {
     setPage(1);
@@ -127,7 +127,7 @@ export default function BooksPage() {
       setPage(1);
       fetchBooks();
     }
-  }, [searchTitle, searchAuthor, searchISBN]);
+  }, [searchTitle, searchAuthor, searchISBN, fetchBooks]);
 
   const formatDate = (date: string | null) => {
     if (!date) return 'Unknown';
@@ -208,14 +208,14 @@ export default function BooksPage() {
               }}
             >
               Discover Books
-            </Typography>
+        </Typography>
             <Typography
               color="text.secondary"
               sx={{ fontSize: { xs: '0.875rem', sm: '1rem' } }}
             >
               Browse books in our collection
-            </Typography>
-          </Box>
+        </Typography>
+      </Box>
 
           {user?.role?.name === 'ADMIN' && (
             <Button
@@ -246,7 +246,7 @@ export default function BooksPage() {
           sx={{
             mb: 4,
             p: { xs: 2, sm: 2.5, md: 3 },
-            borderRadius: 2,
+          borderRadius: 2,
             background:
               'linear-gradient(135deg, #1e3a8a 0%, #3b82f6 50%, #60a5fa 100%)',
             boxShadow: '0 4px 20px rgba(59, 130, 246, 0.2)',
@@ -453,7 +453,7 @@ export default function BooksPage() {
             <Tab label="Recently Added" />
             <Tab label="Most Reviewed" />
           </Tabs>
-        </Box>
+            </Box>
 
         {books.length === 0 ? (
           <Card
@@ -471,18 +471,18 @@ export default function BooksPage() {
               Be the first to add a book
             </Typography>
             {user?.role?.name === 'Admin' && (
-              <Button
-                component={Link}
-                href="/books/new"
+              <Button 
+                component={Link} 
+                href="/books/new" 
                 variant="contained"
                 startIcon={<Add />}
               >
                 Add First Book
               </Button>
             )}
-          </Card>
-        ) : (
-          <>
+        </Card>
+      ) : (
+        <>
             <Box
               sx={{
                 display: 'grid',
@@ -499,18 +499,18 @@ export default function BooksPage() {
                 },
               }}
             >
-              {books.map((book) => (
+            {books.map((book) => (
                 <Box key={book.id}>
-                  <Card
-                    sx={{
+                <Card 
+                  sx={{ 
                       height: { xs: 'auto', sm: 460 },
                       minHeight: { sm: 460 },
-                      display: 'flex',
-                      flexDirection: 'column',
+                    display: 'flex', 
+                    flexDirection: 'column',
                       border: '1px solid #e2e8f0',
                       borderRadius: 3,
                       transition: 'all 0.3s',
-                      '&:hover': {
+                    '&:hover': {
                         boxShadow: '0 10px 30px rgba(59, 130, 246, 0.15)',
                         transform: 'translateY(-4px)',
                         borderColor: '#3B82F6',
@@ -551,20 +551,20 @@ export default function BooksPage() {
                               mb: 0.5,
                             }}
                           >
-                            {book.title}
-                          </Typography>
+                      {book.title}
+                    </Typography>
                           <Typography
                             variant="caption"
                             color="text.secondary"
                             sx={{ fontSize: { xs: '0.7rem', sm: '0.75rem' } }}
                           >
                             Added {formatDate(book.createdAt)}
-                          </Typography>
+                    </Typography>
                         </Box>
                       </Box>
 
                       <Box
-                        sx={{
+                        sx={{ 
                           mb: 2,
                           display: 'flex',
                           alignItems: 'center',
@@ -578,8 +578,8 @@ export default function BooksPage() {
                               value={avgRating(book)}
                               precision={0.5}
                               readOnly
-                              size="small"
-                              sx={{
+                        size="small" 
+                        sx={{ 
                                 color: '#f59e0b',
                                 fontSize: { xs: '1rem', sm: '1.25rem' },
                               }}
@@ -604,7 +604,7 @@ export default function BooksPage() {
                             No reviews yet
                           </Typography>
                         )}
-                      </Box>
+                    </Box>
 
                       <Box sx={{ mb: 2 }}>
                         <Typography
@@ -620,19 +620,19 @@ export default function BooksPage() {
                           }}
                         >
                           About This Book
-                        </Typography>
+                    </Typography>
 
-                        <Typography
+                    <Typography 
                           color="#4a5568"
-                          sx={{
+                      sx={{ 
                             fontSize: { xs: '0.8rem', sm: '0.875rem' },
                             lineHeight: 1.6,
                             mb: 2,
                             overflow: 'hidden',
                             textOverflow: 'ellipsis',
-                            display: '-webkit-box',
+                        display: '-webkit-box',
                             WebkitLineClamp: 2,
-                            WebkitBoxOrient: 'vertical',
+                        WebkitBoxOrient: 'vertical',
                             height: { xs: 40, sm: 44 },
                           }}
                         >
@@ -714,14 +714,14 @@ export default function BooksPage() {
                               sx={{
                                 fontSize: { xs: '0.7rem', sm: '0.75rem' },
                                 fontFamily: 'monospace',
-                                overflow: 'hidden',
+                        overflow: 'hidden',
                                 textOverflow: 'ellipsis',
                                 whiteSpace: 'nowrap',
-                              }}
-                            >
+                      }}
+                    >
                               {book.isbn.substring(0, 18)}
                               {book.isbn.length > 18 ? '...' : ''}
-                            </Typography>
+                    </Typography>
                           </Box>
                         </Box>
                       </Box>
@@ -734,19 +734,19 @@ export default function BooksPage() {
                           mt: 'auto',
                         }}
                       >
-                        <Button
-                          component={Link}
-                          href={`/books/${book.id}`}
-                          variant="outlined"
-                          fullWidth
-                          sx={{
+                    <Button 
+                      component={Link} 
+                      href={`/books/${book.id}`} 
+                      variant="outlined"
+                      fullWidth
+                      sx={{
                             textTransform: 'none',
-                            fontWeight: 600,
+                        fontWeight: 600,
                             fontSize: { xs: '0.8rem', sm: '0.875rem' },
                             py: { xs: 1, sm: 1.25 },
                             borderColor: '#e2e8f0',
                             color: '#4a5568',
-                            '&:hover': {
+                        '&:hover': {
                               borderColor: '#3B82F6',
                               backgroundColor: 'rgba(59, 130, 246, 0.04)',
                               color: '#3B82F6',
@@ -754,32 +754,32 @@ export default function BooksPage() {
                           }}
                         >
                           Details
-                        </Button>
-                        {isAuthenticated && (
-                          <Button
-                            component={Link}
-                            href={`/books/${book.id}/feedback`}
-                            variant="contained"
-                            fullWidth
-                            sx={{
+                    </Button>
+                    {isAuthenticated && (
+                      <Button 
+                        component={Link} 
+                        href={`/books/${book.id}/feedback`} 
+                        variant="contained"
+                        fullWidth
+                        sx={{
                               textTransform: 'none',
-                              fontWeight: 600,
+                          fontWeight: 600,
                               fontSize: { xs: '0.8rem', sm: '0.875rem' },
                               py: { xs: 1, sm: 1.25 },
                               backgroundColor: '#3B82F6',
                               boxShadow: 'none',
-                              '&:hover': {
+                          '&:hover': {
                                 backgroundColor: '#2563EB',
                                 boxShadow: '0 4px 12px rgba(59, 130, 246, 0.3)',
                               },
-                            }}
-                          >
+                        }}
+                      >
                             Review
-                          </Button>
-                        )}
+                      </Button>
+                    )}
                       </Box>
                     </Box>
-                  </Card>
+                </Card>
                 </Box>
               ))}
             </Box>
@@ -824,8 +824,8 @@ export default function BooksPage() {
                 />
               </Box>
             )}
-          </>
-        )}
+        </>
+      )}
       </Box>
     </DashboardLayout>
   );
